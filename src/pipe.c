@@ -6,48 +6,15 @@ int main(void)
 {
 	t_data data;
 
-	// data.cmd_list = create_cmd_list("/bin/cat", (char *[]){"cat", NULL});
-	data.cmd_list = create_cmd_list("/bin/ls", (char *[]){"ls", "-la", NULL});
 
-	t_redir *new = new_redir_node();
-	str_cpy(new->file, "Makefile");
-	new->type = REDIR_INPUT;
-	redir_add_back(&data.cmd_list, new);
+	// cmd_one(&data.cmd_list);
+	// cmd_two(&data.cmd_list);
+	// cmd_three(&data.cmd_list);
+	// cmd_four(&data.cmd_list);
+	// cmd_five(&data.cmd_list);
+	// cmd_six(&data.cmd_list);
+	cmd_seven(&data.cmd_list);
 
-	new = new_redir_node();
-	new->type = REDIR_PIPE;
-	redir_add_back(&data.cmd_list, new);
-
-
-	t_cmd_list *new_cmd = create_cmd_list("/usr/bin/grep", (char *[]){"grep", "a", NULL});
-
-	new = new_redir_node();
-	str_cpy(new->file, "out");
-	new->type = REDIR_OUTPUT;
-
-	redir_add_back(&new_cmd, new);
-
-	new = new_redir_node();
-	str_cpy(new->file, "out2");
-	new->type = REDIR_OUTPUT;
-
-	redir_add_back(&new_cmd, new);
-
-	// new = new_redir_node();
-	// new->type = REDIR_;
-
-	// redir_add_back(&new_cmd, new);
-
-
-
-	add_back(&data.cmd_list, new_cmd);
-
-
-	// print_redir_list(data.cmd_list->redir);
-	// print_redir_list(data.cmd_list->next->redir);
-	// print_args(data.cmd_list);
-
-	// return 0;
 	int i = 0;
 
 	t_cmd_list *temp = data.cmd_list;
@@ -60,15 +27,6 @@ int main(void)
 	fd[2] = dup(STDIN_FILENO);
 	fd[3] = dup(STDOUT_FILENO);
 
-
-	// char *infile = "Makefile";
-	// // char *outfile = NULL;
-	// char *outfile = "out";
-	// if (infile)
-	// 	fd[0] = open(infile, O_RDONLY);
-	// else
-	// 	fd[0] = dup(fd[2]);
-	
 	int ret;
 	i = 0;
 	uint32_t CMD_NUMS = list_size(data.cmd_list);
@@ -76,16 +34,24 @@ int main(void)
 	// exit(1);
 	while (temp)
 	{
+		// fprintf(stderr, "%p\n", temp->redir);
 		check_redir_list(temp->redir, fd);
-
 
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[1]);
-		ret = fork();
-		if (ret == 0)
+
+		if (check_builtin(temp->cmd) == true)
 		{
-			execve(temp->cmd, temp->args, NULL);
-			exit(1);
+			run_builtin(temp);
+		}
+		else
+		{
+			ret = fork();
+			if (ret == 0)
+			{
+				execve(temp->cmd, temp->args, NULL);
+				exit(1);
+			}
 		}
 		temp = temp->next;
 		i++;

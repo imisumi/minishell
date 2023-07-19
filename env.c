@@ -116,9 +116,7 @@ void create_env_lst(char *envp[], t_list **env_lst)
     {
         temp = calloc(sizeof(char), strlen(envp[i]) + 1);
         str_cpy(temp, envp[i]);
-        // printf("%s\n", temp);
         new = ft_lstnew(temp);
-        // printf("%s\n", (char *)new->content);
         list_add_back(env_lst, new);
         i++;
     }

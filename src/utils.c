@@ -166,7 +166,14 @@ void check_redir_list(t_redir *lst, int *fd)
             fd[1] = open(temp->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
             out = 1;
         }
-        if (temp->type == REDIR_PIPE)
+		if (temp->type == REDIR_OUTPUT_APPEND)
+        {
+            // printf("temp->file: %s\n", temp->file);
+
+            fd[1] = open(temp->file, O_WRONLY | O_APPEND);
+            out = 1;
+        }
+        if (temp->type == REDIR_PIPE && out == 0)
         {
             int fd_pipe[2];
             pipe(fd_pipe);
@@ -186,6 +193,104 @@ void check_redir_list(t_redir *lst, int *fd)
         fd[1] = dup(fd[3]);
     // else
     //     dup2(fd[1], STDOUT_FILENO);
+	// if ()
 
     return ;
+}
+
+bool	check_builtin(char *cmd)
+{
+	if (strcmp(cmd, "echo") == 0)
+		return (true);
+	if (strcmp(cmd, "cd") == 0)
+		return (true);
+	if (strcmp(cmd, "pwd") == 0)
+		return (true);
+	if (strcmp(cmd, "export") == 0)
+		return (true);
+	if (strcmp(cmd, "unset") == 0)
+		return (true);
+	if (strcmp(cmd, "env") == 0)
+		return (true);
+	if (strcmp(cmd, "exit") == 0)
+		return (true);
+	return (false);
+}
+
+bool str_cmp(char *s1, char *s2)
+{
+	int	i;
+
+	if(!s1 || !s2)
+		return (false);
+	i = 0;
+	while (s1[i] && s2[i])
+	{
+		if (s1[i] != s2[i])
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
+void run_builtin(t_cmd_list *lst)
+{
+	char	*cwd;
+	// printf("%s\n", lst->cmd);
+	if (strcmp(lst->cmd, "pwd") == 0)
+	{
+		cwd = getcwd(NULL, 0);
+		printf("%s\n", cwd);
+		free(cwd);
+	}
+	if (strcmp(lst->cmd, "echo") == 0)
+	{
+		if (str_cmp(lst->args[1], "-n") == true)
+		{
+			if (lst->args[2] == NULL)
+				return ;
+			printf("%s", lst->args[2]);
+		}
+		else
+		{
+			if (lst->args[1] == NULL)
+				return ;
+			printf("%s\n", lst->args[1]);
+		}
+	}
+}
+
+
+//! redir utils
+
+void add_input_node(t_cmd_list **lst, char *file)
+{
+    t_redir *new = new_redir_node();
+    str_cpy(new->file, file);
+    new->type = REDIR_INPUT;
+    redir_add_back(lst, new);
+}
+
+void add_output_node(t_cmd_list **lst, char *file)
+{
+	t_redir *new = new_redir_node();
+	str_cpy(new->file, file);
+	new->type = REDIR_OUTPUT;
+	redir_add_back(lst, new);
+}
+
+void add_pipe_node(t_cmd_list **lst)
+{
+	t_redir *new = new_redir_node();
+	new->type = REDIR_PIPE;
+	new->file = NULL;
+	redir_add_back(lst, new);
+}
+
+void add_append_output_node(t_cmd_list **lst, char *file)
+{
+	t_redir *new = new_redir_node();
+	str_cpy(new->file, file);
+	new->type = REDIR_OUTPUT_APPEND;
+	redir_add_back(lst, new);
 }
