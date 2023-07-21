@@ -94,4 +94,20 @@ void add_append_output_node(t_cmd_list **lst, char *file);
 bool	check_builtin(char *cmd);
 void	run_builtin(t_cmd_list *lst);
 
+
+//! env
+t_list	*ft_lstnew(void *content);
+
+void list_add_back(t_list **head, t_list *new);
+
+void str_cpy(char *dest, char *src);
+
+void print_env_lst(t_list *env_lst);
+
+void add_env(t_list **env_lst, char *env);
+
+void unset_env(t_list **env_lst, char *env);
+
+void create_env_lst(char *envp[], t_list **env_lst);
+
 #endif

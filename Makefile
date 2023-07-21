@@ -1,7 +1,7 @@
 
 
 all:
-	@gcc ./src/pipe.c ./src/utils.c ./src/commands.c
+	@gcc ./src/pipe.c ./src/utils.c ./src/env.c ./src/commands.c
 
-run: all
-	@gcc ./src/pipe.c ./src/utils.c ./src/commands.c && ./a.out
+run:
+	@gcc ./src/pipe.c ./src/utils.c ./src/env.c ./src/commands.c && ./a.out

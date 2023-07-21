@@ -131,6 +131,8 @@ int main(int argc, char *argv[], char *envp[])
     printf("\n");
 
     create_env_lst(envp, &env_lst);
+	printf("%s\n", env_lst->content);
+	return 0;
 
     add_env(&env_lst, "z=hello");
     add_env(&env_lst, "ff=boo");
@@ -142,7 +144,7 @@ int main(int argc, char *argv[], char *envp[])
     unset_env(&env_lst, "d");
 
 
-    // print_env_lst(env_lst);
+    print_env_lst(env_lst);
     // printf("%d\n", i);
 
     return 0;
