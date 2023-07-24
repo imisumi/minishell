@@ -4,6 +4,25 @@
 // #include "../include/struct.h"
 #include "../include/pipe.h"
 
+void	fill_env_file(t_list *env_lst)
+{
+	t_list *temp;
+	char *temp_env;
+	ssize_t bytes_written;
+	int	fd;
+
+	fd = open(".env.ms", O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	temp = env_lst;
+	while (temp)
+	{
+		temp_env = (char *)temp->content;
+		bytes_written = write(fd, temp_env, strlen(temp_env));
+		bytes_written = write(fd, "\n", 1);
+		temp = temp->next;
+	}
+	close(fd);
+}
+
 t_list	*ft_lstnew(void *content)
 {
 	t_list	*new;
@@ -18,17 +37,17 @@ t_list	*ft_lstnew(void *content)
 
 void list_add_back(t_list **head, t_list *new)
 {
-    t_list *temp;
+	t_list *temp;
 
-    if (*head == NULL)
-    {
-        *head = new;
-        return ;
-    }
-    temp = *head;
-    while (temp->next != NULL)
-        temp = temp->next;
-    temp->next = new;
+	if (*head == NULL)
+	{
+		*head = new;
+		return ;
+	}
+	temp = *head;
+	while (temp->next != NULL)
+		temp = temp->next;
+	temp->next = new;
 }
 
 // void str_cpy(char *dest, char *src)
@@ -46,11 +65,11 @@ void list_add_back(t_list **head, t_list *new)
 
 void print_env_lst(t_list *env_lst)
 {
-    while (env_lst)
-    {
-        printf("%s\n", (char *)env_lst->content);
-        env_lst = env_lst->next;
-    }
+	while (env_lst)
+	{
+		printf("%s\n", (char *)env_lst->content);
+		env_lst = env_lst->next;
+	}
 }
 
 void check_existing_env(t_list **env_lst, char *env)
@@ -90,6 +109,7 @@ void add_env(t_list **env_lst, char *env)
     str_cpy(temp, env);
     new = ft_lstnew(temp);
     list_add_back(env_lst, new);
+	fill_env_file(*env_lst);
 }
 
 void unset_env(t_list **env_lst, char *env)
@@ -119,7 +139,9 @@ void unset_env(t_list **env_lst, char *env)
 		temp = temp->next;
 	}
 	printf("env variable not found: %s\n", env);
+	free(temp);
 	free(temp_env);
+	fill_env_file(*env_lst);
 }
 
 void create_env_lst(char *envp[], t_list **env_lst)
@@ -135,8 +157,10 @@ void create_env_lst(char *envp[], t_list **env_lst)
         str_cpy(temp, envp[i]);
         new = ft_lstnew(temp);
         list_add_back(env_lst, new);
+		// free(temp);
         i++;
     }
+	fill_env_file(*env_lst);
 }
 
 // int main(int argc, char *argv[], char *envp[])

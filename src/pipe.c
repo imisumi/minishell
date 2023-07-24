@@ -1,24 +1,27 @@
 
 #include "../include/pipe.h"
 
+
+
 int main(int argc, char *argv[], char *envp[])
 {
 	t_data data;
 	t_list	*env_lst = NULL;
 	create_env_lst(envp, &env_lst);
 	// printf("%s\n", env_lst->content);
-	// add_env(&env_lst, "z=hello");
-	// add_env(&env_lst, "PATH=noob");
-	// add_env(&env_lst, "ff=boo");
+	add_env(&env_lst, "z=hello");
+	add_env(&env_lst, "PATH=noob");
+	add_env(&env_lst, "ff=boo");
 	// add_env(&env_lst, "asd");
 
 	// unset_env(&env_lst, "PATH");
-	// unset_env(&env_lst, "PATH");
+	unset_env(&env_lst, "PATH");
 	// unset_env(&env_lst, "z");
 	// unset_env(&env_lst, "hey");
 
 
-	print_env_lst(env_lst);
+	// print_env_lst(env_lst);
+	fill_env_file(env_lst);
 	return 0;
 
 
@@ -29,7 +32,8 @@ int main(int argc, char *argv[], char *envp[])
 	// cmd_five(&data.cmd_list);
 	// cmd_six(&data.cmd_list);
 	// cmd_seven(&data.cmd_list);
-	cmd_eight(&data.cmd_list);
+	// cmd_eight(&data.cmd_list);
+	cmd_nine(&data.cmd_list);
 
 
 	int i = 0;
@@ -66,7 +70,8 @@ int main(int argc, char *argv[], char *envp[])
 			ret = fork();
 			if (ret == 0)
 			{
-				execve(temp->cmd, temp->args, NULL);
+				// printf("cmd: %s\n", temp->cmd);
+				execve(temp->cmd, temp->args, envp);
 				exit(1);
 			}
 		}

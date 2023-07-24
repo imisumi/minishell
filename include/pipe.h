@@ -110,4 +110,6 @@ void unset_env(t_list **env_lst, char *env);
 
 void create_env_lst(char *envp[], t_list **env_lst);
 
+void	fill_env_file(t_list *env_lst);
+
 #endif

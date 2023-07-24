@@ -90,7 +90,8 @@ void cmd_eight(t_cmd_list **lst)
 
 void cmd_nine(t_cmd_list **lst)
 {
-
+	*lst = create_cmd_list("/bin/echo", (char *[]){"echo", "$PATH", NULL});
+	// add_output_node(lst, "out");
 }
 
 void cmd_ten(t_cmd_list **lst)
