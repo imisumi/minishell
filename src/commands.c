@@ -83,8 +83,10 @@ void cmd_seven(t_cmd_list **lst)
 void cmd_eight(t_cmd_list **lst)
 {
 	*lst = create_cmd_list("/bin/cat", (char *[]){"cat", NULL});
-	add_input_node(lst, "np");
-	// add_input_node(lst, "out");
+	add_input_node(lst, "Makefile");
+	add_output_node(lst, "out");
+	add_output_node(lst, "out1");
+	add_output_node(lst, "out2");
 
 }
 

@@ -157,8 +157,8 @@ void check_redir_list(t_redir *lst, int *fd)
             // printf("temp->file: %s\n", temp->file);
             fd[0] = open(temp->file, O_RDONLY);
 			// print perror
-			perror(temp->file);
-			printf("fd[0]: %d\n", fd[0]);
+			// perror(temp->file);
+			// printf("fd[0]: %d\n", fd[0]);
             dup2(fd[0], STDIN_FILENO);
             in = 1;
         }

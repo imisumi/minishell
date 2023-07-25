@@ -6,7 +6,7 @@
 /*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:39:57 by imisumi-wsl       #+#    #+#             */
-/*   Updated: 2023/07/21 15:14:05 by imisumi          ###   ########.fr       */
+/*   Updated: 2023/07/25 13:21:29 by imisumi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ typedef struct s_redir
 	t_redir_type	type;
 	struct s_redir	*next;
 }	t_redir;
+
 
 typedef struct s_cmd_list
 {

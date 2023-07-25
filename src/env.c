@@ -139,8 +139,8 @@ void unset_env(t_list **env_lst, char *env)
 		temp = temp->next;
 	}
 	printf("env variable not found: %s\n", env);
-	free(temp);
-	free(temp_env);
+	// free(temp);
+	// free(temp_env);
 	fill_env_file(*env_lst);
 }
 
