@@ -141,64 +141,60 @@ void print_redir_list(t_redir *lst)
 	}
 }
 
-void check_redir_list(t_redir *lst, int *fd)
+bool check_redir_list(t_redir *lst, int *fd)
 {
     t_redir *temp = lst;
 
-    int in = 0;
-    int out = 0;
-    int pip = 0;
-    dup2(fd[0], STDIN_FILENO);
-    // fd[0] = dup(fd[2]);
-    while(temp)
-    {
-        if(temp->type == REDIR_INPUT)
-        {
-            // printf("temp->file: %s\n", temp->file);
-            fd[0] = open(temp->file, O_RDONLY);
-			// print perror
-			// perror(temp->file);
-			// printf("fd[0]: %d\n", fd[0]);
-            dup2(fd[0], STDIN_FILENO);
-            in = 1;
-        }
-        if (temp->type == REDIR_OUTPUT)
-        {
-            // printf("temp->file: %s\n", temp->file);
-
-            fd[1] = open(temp->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-            out = 1;
-        }
+	int in = 0;
+	int out = 0;
+	int pip = 0;
+	dup2(fd[0], STDIN_FILENO);
+	// fd[0] = dup(fd[2]);
+	while(temp)
+	{
+		if(temp->type == REDIR_INPUT)
+		{
+			fd[0] = open(temp->file, O_RDONLY);
+			if (fd[0] == -1)
+			{
+				perror(temp->file);
+				return false;
+			}
+			dup2(fd[0], STDIN_FILENO);
+		}
+		if (temp->type == REDIR_OUTPUT)
+		{
+			fd[1] = open(temp->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			if (fd[1] == -1)
+			{
+				perror(temp->file);
+				return false;
+			}
+			out = 1;
+		}
 		if (temp->type == REDIR_OUTPUT_APPEND)
-        {
-            // printf("temp->file: %s\n", temp->file);
-
-            fd[1] = open(temp->file, O_WRONLY | O_APPEND);
-            out = 1;
-        }
-        if (temp->type == REDIR_PIPE && out == 0)
-        {
-            int fd_pipe[2];
-            pipe(fd_pipe);
-            fd[1] = fd_pipe[1];
-            fd[0] = fd_pipe[0];
-            pip = 1;
-        }
-        temp = temp->next;
-    }
-    // if (in == 0)
-    //     fd[0] = dup(fd[2]);
-    // if (out == 0)
-        // fd[1] = dup(fd[3]);
-    // dup2(fd[0], STDIN_FILENO);
-    // close(fd[0]);
-    if (out == 0 && pip == 0)
-        fd[1] = dup(fd[3]);
-    // else
-    //     dup2(fd[1], STDOUT_FILENO);
-	// if ()
-
-    return ;
+		{
+			fd[1] = open(temp->file, O_WRONLY | O_CREAT | O_APPEND);
+			if (fd[1] == -1)
+			{
+				perror(temp->file);
+				return false;
+			}
+			out = 1;
+		}
+		if (temp->type == REDIR_PIPE && out == 0)
+		{
+			int fd_pipe[2];
+			pipe(fd_pipe);
+			fd[1] = fd_pipe[1];
+			fd[0] = fd_pipe[0];
+			pip = 1;
+		}
+		temp = temp->next;
+	}
+	if (out == 0 && pip == 0)
+		fd[1] = dup(fd[3]);
+	return true;
 }
 
 bool	check_builtin(char *cmd)
@@ -236,7 +232,7 @@ bool str_cmp(char *s1, char *s2)
 	return (true);
 }
 
-void run_builtin(t_cmd_list *lst)
+void girun_builtin(t_cmd_list *lst)
 {
 	char	*cwd;
 	// printf("%s\n", lst->cmd);

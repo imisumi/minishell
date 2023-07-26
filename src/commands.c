@@ -98,5 +98,21 @@ void cmd_nine(t_cmd_list **lst)
 
 void cmd_ten(t_cmd_list **lst)
 {
+	*lst = create_cmd_list("/bin/cat", (char *[]){"cat", NULL});
+	add_input_node(lst, "das");
+	add_pipe_node(lst);
 
+	t_cmd_list *new_cmd = create_cmd_list("/bin/ls", (char *[]){"ls", NULL});
+	add_back(lst, new_cmd);
+}
+
+void	cmd_eleven(t_cmd_list **lst)
+{
+	*lst = create_cmd_list("ls", (char *[]){"ls", NULL});
+	// add_output_node(lst, "out");
+	// add_pipe_node(lst);
+
+	// t_cmd_list *new_cmd = create_cmd_list("/bin/ls", (char *[]){"ls", NULL});
+	// t_cmd_list *new_cmd = create_cmd_list("/usr/bin/grep", (char *[]){"grep", "t", NULL});
+	// add_back(lst, new_cmd);
 }

@@ -16,6 +16,7 @@
 # include <signal.h>
 # include <stdint.h>
 
+#include "../lib/libft/includes/libft.h"
 
 # include "struct.h"
 
@@ -68,7 +69,7 @@ void print_args(t_cmd_list *lst);
 
 void print_redir_list(t_redir *lst);
 
-void check_redir_list(t_redir *lst, int *fd);
+bool check_redir_list(t_redir *lst, int *fd);
 
 
 
@@ -83,6 +84,7 @@ void cmd_seven(t_cmd_list **l);
 void cmd_eight(t_cmd_list **l);
 void cmd_nine(t_cmd_list **l);
 void cmd_ten(t_cmd_list **l);
+void cmd_eleven(t_cmd_list **l);
 
 
 void add_input_node(t_cmd_list **lst, char *file);
