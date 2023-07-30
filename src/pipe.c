@@ -145,24 +145,9 @@ void	exec_cmd(t_cmd_list *lst, t_list *env_lst)
 int main(int argc, char *argv[], char *envp[])
 {
 	t_data data;
-	t_list	*env_lst = NULL;
-	create_env_lst(envp, &env_lst);
-	// printf("%s\n", env_lst->content);
-	// add_env(&env_lst, "z=hello");
-	// add_env(&env_lst, "PATH=noob");
-	// add_env(&env_lst, "ff=boo");
-	// add_env(&env_lst, "asd");
-
-	// unset_env(&env_lst, "PATH");
-	unset_env(&env_lst, "PATH");
-	// unset_env(&env_lst, "z");
-	// unset_env(&env_lst, "hey");
-
-
-	// print_env_lst(env_lst);
-	// fill_env_file(env_lst);
-	// return 0;
-
+	data.env_lst = NULL;
+	create_env_lst(envp, &data.env_lst);
+	printf("%s\n", getcwd(NULL, 0));
 
 	// cmd_one(&data.cmd_list);
 	// cmd_two(&data.cmd_list);
@@ -176,7 +161,7 @@ int main(int argc, char *argv[], char *envp[])
 	// cmd_ten(&data.cmd_list);
 	cmd_eleven(&data.cmd_list);
 
-
+	// return 1;
 	int i = 0;
 	bool cmd = true;
 
@@ -212,14 +197,14 @@ int main(int argc, char *argv[], char *envp[])
 		if (cmd == true)
 		{
 			if (check_builtin(temp->cmd) == true)
-				run_builtin(temp);
+				run_builtin(temp, data.env_lst);
 			else
 			{
 				ret = fork();
 				if (ret == 0)
 				{
 					// printf("cmd: %s\n", temp->cmd);
-					exec_cmd(temp, env_lst);
+					exec_cmd(temp, data.env_lst);
 					// execve(temp->cmd, temp->args, envp);
 					exit(1);
 				}
@@ -234,7 +219,8 @@ int main(int argc, char *argv[], char *envp[])
 	{
 		wait(&status);
 	}
-
+	// print_env_lst(data.env_lst);
+	printf("%s\n", getcwd(NULL, 0));
 	dup2(fd[2], STDIN_FILENO);
 	dup2(fd[3], STDOUT_FILENO);
 	close(fd[2]);

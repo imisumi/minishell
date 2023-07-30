@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   struct.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:39:57 by imisumi-wsl       #+#    #+#             */
-/*   Updated: 2023/07/25 13:21:29 by imisumi          ###   ########.fr       */
+/*   Updated: 2023/07/28 20:10:19 by imisumi-wsl      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ typedef struct s_cmd_list
 typedef struct s_data
 {
 	t_cmd_list	*cmd_list;
+	t_list		*env_lst;
 }	t_data;
 
 #endif // STRUCT_H

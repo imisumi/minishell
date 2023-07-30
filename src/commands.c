@@ -108,7 +108,13 @@ void cmd_ten(t_cmd_list **lst)
 
 void	cmd_eleven(t_cmd_list **lst)
 {
-	*lst = create_cmd_list("ls", (char *[]){"ls", NULL});
+	// *lst = create_cmd_list("ls", (char *[]){"ls", NULL});
+	// *lst = create_cmd_list("env", (char *[]){"env", NULL});
+	// *lst = create_cmd_list("unset", (char *[]){"unset", "PATH", NULL});
+	// *lst = create_cmd_list("export", (char *[]){"export", "PATH=Hello World", NULL});
+	// *lst = create_cmd_list("cd", (char *[]){"cd", "..", NULL});
+	*lst = create_cmd_list("cd", (char *[]){"cd", NULL});
+	// add_back(lst, new_cmd);
 	// add_output_node(lst, "out");
 	// add_pipe_node(lst);
 
