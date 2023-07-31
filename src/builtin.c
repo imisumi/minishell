@@ -86,7 +86,7 @@ void	builtin_cd(t_cmd_list *lst)
 {
 	//TODO: own get env
 	if (lst->args[1] == NULL) {
-		printf("cd: HOME not set\n");
+		// printf("cd: HOME not set\n");
 		chdir(getenv("HOME"));
 	}
 	else

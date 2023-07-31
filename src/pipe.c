@@ -142,27 +142,8 @@ void	exec_cmd(t_cmd_list *lst, t_list *env_lst)
 	exit(1);
 }
 
-int main(int argc, char *argv[], char *envp[])
+void	pipex(t_data data)
 {
-	t_data data;
-	data.env_lst = NULL;
-	create_env_lst(envp, &data.env_lst);
-	printf("%s\n", getcwd(NULL, 0));
-
-	// cmd_one(&data.cmd_list);
-	// cmd_two(&data.cmd_list);
-	// cmd_three(&data.cmd_list);
-	// cmd_four(&data.cmd_list);
-	// cmd_five(&data.cmd_list);
-	// cmd_six(&data.cmd_list);
-	// cmd_seven(&data.cmd_list);
-	// cmd_eight(&data.cmd_list);
-	// cmd_nine(&data.cmd_list);
-	// cmd_ten(&data.cmd_list);
-	cmd_eleven(&data.cmd_list);
-
-	// return 1;
-	int i = 0;
 	bool cmd = true;
 
 	t_cmd_list *temp = data.cmd_list;
@@ -176,11 +157,8 @@ int main(int argc, char *argv[], char *envp[])
 	fd[3] = dup(STDOUT_FILENO);
 
 	int ret;
-	i = 0;
+	int i = 0;
 	uint32_t CMD_NUMS = list_size(data.cmd_list);
-
-	// exec_cmd(temp, env_lst);
-	// return 0;
 
 	while (temp)
 	{
@@ -220,9 +198,49 @@ int main(int argc, char *argv[], char *envp[])
 		wait(&status);
 	}
 	// print_env_lst(data.env_lst);
-	printf("%s\n", getcwd(NULL, 0));
+	// printf("%s\n", getcwd(NULL, 0));
 	dup2(fd[2], STDIN_FILENO);
 	dup2(fd[3], STDOUT_FILENO);
 	close(fd[2]);
 	close(fd[3]);
+}
+
+void temp_cmd(t_cmd_list **lst, char *cmd, char **args);
+
+int main(int argc, char *argv[], char *envp[])
+{
+	t_data data;
+	bool is_running = true;
+	data.env_lst = NULL;
+	create_env_lst(envp, &data.env_lst);
+	// printf("%s\n", getcwd(NULL, 0));
+
+	// cmd_one(&data.cmd_list);
+	// cmd_two(&data.cmd_list);
+	// cmd_three(&data.cmd_list);
+	// cmd_four(&data.cmd_list);
+	// cmd_five(&data.cmd_list);
+	// cmd_six(&data.cmd_list);
+	// cmd_seven(&data.cmd_list);
+	// cmd_eight(&data.cmd_list);
+	// cmd_nine(&data.cmd_list);
+	// cmd_ten(&data.cmd_list);
+	// cmd_eleven(&data.cmd_list);
+	while (is_running)
+	{
+		char *line = readline("");
+		add_history(line);
+		if (strcmp(line, "exit") == 0)
+			exit(0);
+		if (line)
+		{
+			char **args = ft_split(line, ' ');
+			if (args[0]) {
+				temp_cmd(&data.cmd_list, args[0], args);
+				pipex(data);
+			}
+		}
+
+		printf("\n");
+	}
 }

@@ -6,6 +6,7 @@
 
 void	fill_env_file(t_list *env_lst)
 {
+	// printf("filling env file\n");
 	t_list *temp;
 	char *temp_env;
 	ssize_t bytes_written;
@@ -114,6 +115,7 @@ void add_env(t_list **env_lst, char *env)
 
 void unset_env(t_list **env_lst, char *env)
 {
+	// printf("unsetting env\n");
 	t_list *temp;
 	t_list *prev;
 
@@ -122,6 +124,7 @@ void unset_env(t_list **env_lst, char *env)
 	char *temp_env = calloc(sizeof(char), strlen(env) + 2);
 	str_cpy(temp_env, env);
 	strcat(temp_env, "=");
+	// printf("check\n");
 	while(temp)
 	{
 		if (strncmp((char *)temp->content, temp_env, strlen(temp_env)) == 0)
@@ -133,11 +136,13 @@ void unset_env(t_list **env_lst, char *env)
 			free(temp->content);
 			free(temp);
 			free(temp_env);
+			fill_env_file(*env_lst);
 			return ;
 		}
 		prev = temp;
 		temp = temp->next;
 	}
+	// printf("check\n");
 	printf("env variable not found: %s\n", env);
 	// free(temp);
 	// free(temp_env);
