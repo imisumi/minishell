@@ -64,9 +64,9 @@ void	builtin_echo(t_cmd_list *lst)
 		while (lst->args[i])
 		{
 			if (lst->args[i + 1])
-				printf("%s ", lst->args[2]);
+				printf("%s ", lst->args[i]);
 			else
-				printf("%s\n", lst->args[2]);
+				printf("%s\n", lst->args[i]);
 			i++;
 		}
 	}
@@ -82,12 +82,14 @@ void	builtin_export(t_cmd_list *lst, t_list *env_lst)
 	add_env(&env_lst, lst->args[1]);
 }
 
-void	builtin_cd(t_cmd_list *lst)
+void	builtin_cd(t_cmd_list *lst, t_list *envp)
 {
 	//TODO: own get env
 	if (lst->args[1] == NULL) {
 		// printf("cd: HOME not set\n");
-		chdir(getenv("HOME"));
+		// chdir(getenv("HOME"));
+		// printf("%s\n", get_env(lst_to_arr(envp), "HOME="));
+		chdir(get_env(lst_to_arr(envp), "HOME="));
 	}
 	else
 		chdir(lst->args[1]);
@@ -112,5 +114,5 @@ void run_builtin(t_cmd_list *lst, t_list *env_lst)
 	if (strcmp(lst->cmd, "export") == 0)
 		builtin_export(lst, env_lst);
 	if (strcmp(lst->cmd, "cd") == 0)
-		builtin_cd(lst);
+		builtin_cd(lst, env_lst);
 }

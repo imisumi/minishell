@@ -27,7 +27,7 @@ void	free_2d_arr(char **array)
 		free(array);
 }
 
-char	*get_env_path(char **envp)
+char	*get_env(char **envp, char *path)
 {
 	int		i;
 	char	*env;
@@ -35,7 +35,7 @@ char	*get_env_path(char **envp)
 	i = 0;
 	while (envp[i])
 	{
-		env = ft_strnstr(envp[i], "PATH=", 5);
+		env = ft_strnstr(envp[i], path, ft_strlen(path));
 		if (env != NULL)
 		{
 			env = env + 5;
@@ -46,6 +46,17 @@ char	*get_env_path(char **envp)
 	return (NULL);
 }
 
+// char *get_env(t_list *envp, char *env)
+// {
+// 	while (envp)
+// 	{
+// 		if (strcmp(envp->content, env) == 0)
+// 			return (envp->content + strlen(env));
+// 		envp = envp->next;
+// 	}
+// 	return (NULL);
+// }
+
 char	**env_paths(char **envp)
 {
 	int		i;
@@ -54,7 +65,8 @@ char	**env_paths(char **envp)
 	char	**paths;
 
 	// paths[0] = NULL;
-	env = get_env_path(envp);
+	env = get_env(envp, "PATH=");
+	// printf("%s\n", env);
 	if (env == NULL)
 		return (NULL);
 	paths = ft_split(env, ':');
@@ -66,15 +78,12 @@ char	**env_paths(char **envp)
 	while (paths[i])
 	{
 		temp = ft_strjoin(paths[i], "/");
-		if (temp == NULL)
-		{
-			free_2d_arr(paths);
-			// exit_msg("Malloc in ft_strjoin has failed", NULL, 1);
-		}
 		free(paths[i]);
 		paths[i] = temp;
+		// printf("PATH: %s\n", paths[i]);
 		i++;
 	}
+	// exit(0);
 	return (paths);
 }
 
@@ -106,10 +115,13 @@ char	*find_path(char *cmd, char **paths)
 		return (cmd);
 	while (paths[i])
 	{
+		// temp = ft_strjoin("/", cmd);
 		temp = ft_strjoin(paths[i], cmd);
 		free(paths[i]);
 		paths[i] = temp;
 		// printf("%s\n", temp);
+		// printf("%s\n", paths[i]);
+		// printf("\n");
 		if (access(paths[i], F_OK | X_OK) == 0)
 			return (paths[i]);
 		i++;
@@ -136,7 +148,7 @@ void	exec_cmd(t_cmd_list *lst, t_list *env_lst)
 		cmd = find_path(lst->cmd, paths);
 		printf("%s\n", cmd);
 		execve(cmd, lst->args, envp);
-		perror(cmd);
+		// perror(cmd);
 		exit(1);
 	}
 	exit(1);
@@ -164,11 +176,7 @@ void	pipex(t_data data)
 	{
 		// fprintf(stderr, "%p\n", temp->redir);
 		cmd = check_redir_list(temp->redir, fd);
-		if (temp->next)
-		{
-			
-		}
-		dup2(fd[1], STDOUT_FILENO);
+		dup2(fd[1], STDOUT_FILENO); 
 		close(fd[1]);
 
 
@@ -206,6 +214,7 @@ void	pipex(t_data data)
 }
 
 void temp_cmd(t_cmd_list **lst, char *cmd, char **args);
+void temp_cmd_pipe(t_cmd_list **lst, char **arg1, char **arg2);
 
 int main(int argc, char *argv[], char *envp[])
 {
@@ -230,17 +239,50 @@ int main(int argc, char *argv[], char *envp[])
 	{
 		char *line = readline("");
 		add_history(line);
+		// char *line = "ls";
 		if (strcmp(line, "exit") == 0)
 			exit(0);
 		if (line)
 		{
-			char **args = ft_split(line, ' ');
-			if (args[0]) {
-				temp_cmd(&data.cmd_list, args[0], args);
+			// char **args = ft_split(line, ' ');
+			char **args;
+			if (strchr(line, '|') != NULL)
+			{
+				// printf("PIPE\n");
+				args = ft_split(line, '|');
+				// args = ft_split(args[1], ' ');
+				// for (int i = 0; args[i]; i++)
+				// 	printf("%s\n", args[i]);
+
+				char **arg1 = ft_split(args[0], ' ');
+				char **arg2 = ft_split(args[1], ' ');
+				// temp_cmd(&data.cmd_list, arg1[0], arg1);
+				// pipex(data);
+				// if (arg1[0] && arg2[0])
+				// {
+				// 	// printf("CHECK\n");
+				// 	temp_cmd_pipe(&data.cmd_list, arg1, arg2);
+				// 	pipex(data);
+				// }
+				temp_cmd_pipe(&data.cmd_list, arg1, arg2);
 				pipex(data);
 			}
+			else
+			{
+				args = ft_split(line, ' ');
+				if (args[0]) {
+					temp_cmd(&data.cmd_list, args[0], args);
+					pipex(data);
+				}
+			}
+			
+			// exit(0);
+			// if (args[0]) {
+			// 	temp_cmd(&data.cmd_list, args[0], args);
+			// 	pipex(data);
+			// }
 		}
-
 		printf("\n");
+		// exit(0);
 	}
 }

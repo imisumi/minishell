@@ -96,20 +96,19 @@ void check_existing_env(t_list **env_lst, char *env)
 
 void add_env(t_list **env_lst, char *env)
 {
-    char *temp;
-    t_list *new;
+	char	*temp;
+	t_list	*new;
 
-    int i = 0;
-    if (strchr(env, '=') == NULL)
-    {
-        printf("invalid env variable: %s\n", env);
-        return ;
-    }
+	if (strchr(env, '=') == NULL || env[0] == '=')
+	{
+		printf("invalid env variable: %s\n", env);
+		return ;
+	}
 	check_existing_env(env_lst, env);
-    temp = calloc(sizeof(char), strlen(env) + 1);
-    str_cpy(temp, env);
-    new = ft_lstnew(temp);
-    list_add_back(env_lst, new);
+	temp = calloc(sizeof(char), strlen(env) + 1);
+	str_cpy(temp, env);
+	new = ft_lstnew(temp);
+	list_add_back(env_lst, new);
 	fill_env_file(*env_lst);
 }
 
@@ -119,11 +118,18 @@ void unset_env(t_list **env_lst, char *env)
 	t_list *temp;
 	t_list *prev;
 
+	if (env[0] == '=')
+	{
+		printf("= is not a valid env variable\n");
+		return ;
+	}
 	temp = *env_lst;
 	prev = NULL;
 	char *temp_env = calloc(sizeof(char), strlen(env) + 2);
 	str_cpy(temp_env, env);
+	// printf("temp_env: %s\n", temp_env);
 	strcat(temp_env, "=");
+	// printf("temp_env: %s\n", temp_env);
 	// printf("check\n");
 	while(temp)
 	{
@@ -143,7 +149,7 @@ void unset_env(t_list **env_lst, char *env)
 		temp = temp->next;
 	}
 	// printf("check\n");
-	printf("env variable not found: %s\n", env);
+	// printf("env variable not found: %s\n", env);
 	// free(temp);
 	// free(temp_env);
 	fill_env_file(*env_lst);

@@ -5,6 +5,12 @@
 
 int main(void)
 {
-    char *str = getenv("HOME");
-	printf("%s\n", str);
+	const char* paths[] = {"hello", "world", "!"};
+
+	int i = 0;
+	while (paths[i])
+	{
+		printf("%s\n", paths[i]);
+		i++;
+	}
 }

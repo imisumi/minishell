@@ -116,4 +116,7 @@ void create_env_lst(char *envp[], t_list **env_lst);
 
 void	fill_env_file(t_list *env_lst);
 
+char	*get_env(char **envp, char *path);
+char	**lst_to_arr(t_list *lst);
+
 #endif
