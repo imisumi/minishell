@@ -84,15 +84,31 @@ void	builtin_export(t_cmd_list *lst, t_list *env_lst)
 
 void	builtin_cd(t_cmd_list *lst, t_list *envp)
 {
-	//TODO: own get env
-	if (lst->args[1] == NULL) {
-		// printf("cd: HOME not set\n");
-		// chdir(getenv("HOME"));
-		// printf("%s\n", get_env(lst_to_arr(envp), "HOME="));
-		chdir(get_env(lst_to_arr(envp), "HOME="));
-	}
+	char	*cwd;
+	char	*temp;
+	int		check;
+
+	check = 0;
+	cwd = getcwd(NULL, 0);
+	if (lst->args[1] == NULL)
+		check = chdir(get_env(lst_to_arr(envp), "HOME="));
 	else
-		chdir(lst->args[1]);
+		check = chdir(lst->args[1]);
+	printf("%d\n", check);
+	if (check == -1)
+		return ;
+	temp = ft_strjoin("OLDPWD=", cwd);
+	printf("old pwd = %s\n", temp);
+	add_env(&envp, temp);
+	free(temp);
+	free(cwd);
+	cwd = getcwd(NULL, 0);
+	temp = ft_strjoin("PWD=", cwd);
+	printf("new pwd = %s\n", temp);
+	add_env(&envp, temp);
+	free(temp);
+	free(cwd);
+	// printf("%d\n", check);
 }
 
 void run_builtin(t_cmd_list *lst, t_list *env_lst)

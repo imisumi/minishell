@@ -6,7 +6,7 @@
 /*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/06 16:38:07 by imisumi           #+#    #+#             */
-/*   Updated: 2022/11/09 13:09:23 by imisumi          ###   ########.fr       */
+/*   Updated: 2023/08/03 14:50:22 by imisumi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,11 @@
 
 char	*ft_strdup(const char *s)
 {
-	size_t	len;
 	size_t	i;
 	char	*dup;
 
 	i = 0;
-	len = 0;
-	len = ft_strlen(s) + 1;
-	dup = malloc(sizeof(char) * len);
+	dup = malloc(sizeof(char) * ft_strlen(s) + 1);
 	if (!dup)
 		return (NULL);
 	while (s[i])

@@ -135,6 +135,10 @@ void	exec_cmd(t_cmd_list *lst, t_list *env_lst)
 	char	**paths;
 	char	*cmd;
 
+	//TODO: 
+	//!
+	//?
+
 	envp = lst_to_arr(env_lst);
 	paths = env_paths(envp);
 	if (ft_strchr(lst->cmd, '/') != NULL)
@@ -149,6 +153,8 @@ void	exec_cmd(t_cmd_list *lst, t_list *env_lst)
 		printf("%s\n", cmd);
 		execve(cmd, lst->args, envp);
 		// perror(cmd);
+		// _Exit(1);
+		_exit(1);
 		exit(1);
 	}
 	exit(1);
@@ -246,41 +252,41 @@ int main(int argc, char *argv[], char *envp[])
 		{
 			// char **args = ft_split(line, ' ');
 			char **args;
-			if (strchr(line, '|') != NULL)
-			{
-				// printf("PIPE\n");
-				args = ft_split(line, '|');
-				// args = ft_split(args[1], ' ');
-				// for (int i = 0; args[i]; i++)
-				// 	printf("%s\n", args[i]);
+			// if (strchr(line, '|') != NULL)
+			// {
+			// 	// printf("PIPE\n");
+			// 	args = ft_split(line, '|');
+			// 	// args = ft_split(args[1], ' ');
+			// 	// for (int i = 0; args[i]; i++)
+			// 	// 	printf("%s\n", args[i]);
 
-				char **arg1 = ft_split(args[0], ' ');
-				char **arg2 = ft_split(args[1], ' ');
-				// temp_cmd(&data.cmd_list, arg1[0], arg1);
-				// pipex(data);
-				// if (arg1[0] && arg2[0])
-				// {
-				// 	// printf("CHECK\n");
-				// 	temp_cmd_pipe(&data.cmd_list, arg1, arg2);
-				// 	pipex(data);
-				// }
-				temp_cmd_pipe(&data.cmd_list, arg1, arg2);
-				pipex(data);
-			}
-			else
-			{
-				args = ft_split(line, ' ');
-				if (args[0]) {
-					temp_cmd(&data.cmd_list, args[0], args);
-					pipex(data);
-				}
-			}
-			
-			// exit(0);
-			// if (args[0]) {
-			// 	temp_cmd(&data.cmd_list, args[0], args);
+			// 	char **arg1 = ft_split(args[0], ' ');
+			// 	char **arg2 = ft_split(args[1], ' ');
+			// 	// temp_cmd(&data.cmd_list, arg1[0], arg1);
+			// 	// pipex(data);
+			// 	// if (arg1[0] && arg2[0])
+			// 	// {
+			// 	// 	// printf("CHECK\n");
+			// 	// 	temp_cmd_pipe(&data.cmd_list, arg1, arg2);
+			// 	// 	pipex(data);
+			// 	// }
+			// 	temp_cmd_pipe(&data.cmd_list, arg1, arg2);
 			// 	pipex(data);
 			// }
+			// else
+			// {
+			// 	args = ft_split(line, ' ');
+			// 	if (args[0]) {
+			// 		temp_cmd(&data.cmd_list, args[0], args);
+			// 		pipex(data);
+			// 	}
+			// }
+			args = ft_split(line, ' ');
+			if (args[0]) {
+				temp_cmd(&data.cmd_list, args[0], args);
+				pipex(data);
+			}
+
 		}
 		printf("\n");
 		// exit(0);

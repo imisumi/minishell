@@ -82,34 +82,52 @@ void check_existing_env(t_list **env_lst, char *env)
 	while(env[i] && env[i] != '=')
 		i++;
 	str = malloc(sizeof(char) * i + 1);
-	i = 0;
-	while(env[i] && env[i] != '=')
-	{
-		str[i] = env[i];
-		i++;
-	}
+	if (!str)
+		exit (1);
 	str[i] = '\0';
-	unset_env(env_lst, str);
-	free(str);
+	// i = 0;
+	// while(str[i])
+	// {
+	// 	str[i] = env[i];
+	// 	i++;
+	// }
+	// unset_env(env_lst, str);
+	// free(str);
 }
 
+size_t ftstrlen(const char *s)
+{
+    size_t length = 0;
+    while (s[length] != '\0')
+    {
+        length++;
+    }
+    return length;
+}
 
 void add_env(t_list **env_lst, char *env)
 {
 	char	*temp;
 	t_list	*new;
 
-	if (strchr(env, '=') == NULL || env[0] == '=')
-	{
-		printf("invalid env variable: %s\n", env);
-		return ;
-	}
+	// printf("adding env: %s\n", env);
+	// if (ft_strchr(env, '=') == NULL || env[0] == '=')
+	// {
+	// 	printf("invalid env variable: %s\n", env);
+	// 	return ;
+	// }
+	// printf("check\n");
 	check_existing_env(env_lst, env);
-	temp = calloc(sizeof(char), strlen(env) + 1);
-	str_cpy(temp, env);
+	// temp = malloc(sizeof(char) * ft_strlen(env) + 1);
+	// str_cpy(temp, env);
+	temp = strdup(env);
+	printf("temp: %s\n", temp);
+	// exit(0);
 	new = ft_lstnew(temp);
 	list_add_back(env_lst, new);
 	fill_env_file(*env_lst);
+	free(env);
+	// exit(0);
 }
 
 void unset_env(t_list **env_lst, char *env)
@@ -117,6 +135,7 @@ void unset_env(t_list **env_lst, char *env)
 	// printf("unsetting env\n");
 	t_list *temp;
 	t_list *prev;
+	// return ;
 
 	if (env[0] == '=')
 	{
@@ -125,22 +144,22 @@ void unset_env(t_list **env_lst, char *env)
 	}
 	temp = *env_lst;
 	prev = NULL;
-	char *temp_env = calloc(sizeof(char), strlen(env) + 2);
+	char *temp_env = ft_calloc(sizeof(char), ft_strlen(env) + 2);
 	str_cpy(temp_env, env);
-	// printf("temp_env: %s\n", temp_env);
-	strcat(temp_env, "=");
-	// printf("temp_env: %s\n", temp_env);
+	temp_env[ft_strlen(env)] = '=';
+	printf("temp_env: %s\n", temp_env);
 	// printf("check\n");
 	while(temp)
 	{
-		if (strncmp((char *)temp->content, temp_env, strlen(temp_env)) == 0)
+		if (ft_strncmp((char *)temp->content, temp_env, ft_strlen(temp_env)) == 0)
 		{
+			printf("found env variable: %s\n", (char *)temp_env);
 			if (prev == NULL)
 				*env_lst = temp->next;
 			else
 				prev->next = temp->next;
-			free(temp->content);
-			free(temp);
+			// free(temp->content);
+			// free(temp);
 			free(temp_env);
 			fill_env_file(*env_lst);
 			return ;
@@ -151,7 +170,7 @@ void unset_env(t_list **env_lst, char *env)
 	// printf("check\n");
 	// printf("env variable not found: %s\n", env);
 	// free(temp);
-	// free(temp_env);
+	free(temp_env);
 	fill_env_file(*env_lst);
 }
 
