@@ -4,15 +4,21 @@
 // #include "../include/struct.h"
 #include "../include/pipe.h"
 
+char *local_dir;
+
 void	fill_env_file(t_list *env_lst)
 {
+	// char * temp = getcwd(NULL, 0);
+	// local_dir = ft_strjoin(temp, "/.env.ms");
+	// free(temp);
+
 	// printf("filling env file\n");
 	t_list *temp;
 	char *temp_env;
 	ssize_t bytes_written;
 	int	fd;
 
-	fd = open(".env.ms", O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	fd = open(local_dir, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	temp = env_lst;
 	while (temp)
 	{
@@ -22,18 +28,6 @@ void	fill_env_file(t_list *env_lst)
 		temp = temp->next;
 	}
 	close(fd);
-}
-
-t_list	*ft_lstnew(void *content)
-{
-	t_list	*new;
-
-	new = (t_list *)malloc(sizeof(t_list));
-	if (!new)
-		return (0);
-	new->next = NULL;
-	new->content = content;
-	return (new);
 }
 
 void list_add_back(t_list **head, t_list *new)
@@ -51,19 +45,6 @@ void list_add_back(t_list **head, t_list *new)
 	temp->next = new;
 }
 
-// void str_cpy(char *dest, char *src)
-// {
-// 	int i;
-
-// 	i = 0;
-// 	while (src[i])
-// 	{
-// 		dest[i] = src[i];
-// 		i++;
-// 	}
-// 	dest[i] = '\0';
-// }
-
 void print_env_lst(t_list *env_lst)
 {
 	while (env_lst)
@@ -73,36 +54,19 @@ void print_env_lst(t_list *env_lst)
 	}
 }
 
-void check_existing_env(t_list **env_lst, char *env)
+void	check_existing_env(t_list **env_lst, char *env)
 {
 	int		i;
 	char	*str;
 
 	i = 0;
-	while(env[i] && env[i] != '=')
+	while(env[i] != '=')
 		i++;
-	str = malloc(sizeof(char) * i + 1);
+	str = ft_substr(env, 0, i);
 	if (!str)
-		exit (1);
-	str[i] = '\0';
-	// i = 0;
-	// while(str[i])
-	// {
-	// 	str[i] = env[i];
-	// 	i++;
-	// }
-	// unset_env(env_lst, str);
-	// free(str);
-}
-
-size_t ftstrlen(const char *s)
-{
-    size_t length = 0;
-    while (s[length] != '\0')
-    {
-        length++;
-    }
-    return length;
+		exit(1);
+	unset_env(env_lst, str);
+	free(str);
 }
 
 void add_env(t_list **env_lst, char *env)
@@ -110,45 +74,37 @@ void add_env(t_list **env_lst, char *env)
 	char	*temp;
 	t_list	*new;
 
-	// printf("adding env: %s\n", env);
-	// if (ft_strchr(env, '=') == NULL || env[0] == '=')
-	// {
-	// 	printf("invalid env variable: %s\n", env);
-	// 	return ;
-	// }
-	// printf("check\n");
+	if (ft_strchr(env, '=') == NULL || env[0] == '=')
+	{
+		printf("invalid env variable: %s\n", env);
+		return ;
+	}
+	printf("adding env: %s\n", env);
 	check_existing_env(env_lst, env);
-	// temp = malloc(sizeof(char) * ft_strlen(env) + 1);
-	// str_cpy(temp, env);
 	temp = strdup(env);
-	printf("temp: %s\n", temp);
-	// exit(0);
+	// printf("add temp: %s\n", temp);
 	new = ft_lstnew(temp);
-	list_add_back(env_lst, new);
+	// list_add_back(env_lst, new);
+	ft_lstadd_back(env_lst, new);
 	fill_env_file(*env_lst);
-	free(env);
-	// exit(0);
 }
 
-void unset_env(t_list **env_lst, char *env)
+
+
+void	unset_env(t_list **env_lst, char *env)
 {
-	// printf("unsetting env\n");
-	t_list *temp;
-	t_list *prev;
-	// return ;
+	t_list	*temp;
+	t_list	*prev;
+	char	*temp_env;
 
 	if (env[0] == '=')
 	{
 		printf("= is not a valid env variable\n");
 		return ;
 	}
-	temp = *env_lst;
 	prev = NULL;
-	char *temp_env = ft_calloc(sizeof(char), ft_strlen(env) + 2);
-	str_cpy(temp_env, env);
-	temp_env[ft_strlen(env)] = '=';
-	printf("temp_env: %s\n", temp_env);
-	// printf("check\n");
+	temp_env = ft_strjoin(env, "=");
+	temp = *env_lst;
 	while(temp)
 	{
 		if (ft_strncmp((char *)temp->content, temp_env, ft_strlen(temp_env)) == 0)
@@ -158,8 +114,6 @@ void unset_env(t_list **env_lst, char *env)
 				*env_lst = temp->next;
 			else
 				prev->next = temp->next;
-			// free(temp->content);
-			// free(temp);
 			free(temp_env);
 			fill_env_file(*env_lst);
 			return ;
@@ -167,54 +121,31 @@ void unset_env(t_list **env_lst, char *env)
 		prev = temp;
 		temp = temp->next;
 	}
-	// printf("check\n");
-	// printf("env variable not found: %s\n", env);
-	// free(temp);
 	free(temp_env);
 	fill_env_file(*env_lst);
 }
 
-void create_env_lst(char *envp[], t_list **env_lst)
+
+t_list	*init_env_lst(char **envp)
 {
-    int i;
-    char *temp;
-    t_list *new;
+	t_list	*env_lst;
+	t_list	*temp;
+	char	*temp_env;
+	int		i;
 
-    i = 0;
-    while (envp[i])
-    {
-        temp = calloc(sizeof(char), strlen(envp[i]) + 1);
-        str_cpy(temp, envp[i]);
-        new = ft_lstnew(temp);
-        list_add_back(env_lst, new);
-		// free(temp);
-        i++;
-    }
-	fill_env_file(*env_lst);
+	i = 0;
+	env_lst = NULL;
+	while (envp[i])
+	{
+		temp_env = ft_strdup(envp[i]);
+		if (!temp_env)
+			exit(1);
+		temp = ft_lstnew(temp_env);
+		if (!temp)
+			exit(1);
+		ft_lstadd_back(&env_lst, temp);
+		i++;
+	}
+	fill_env_file(env_lst);
+	return (env_lst);
 }
-
-// int main(int argc, char *argv[], char *envp[])
-// {
-//     t_list *env_lst;
-
-//     env_lst = NULL;
-
-//     printf("\n");
-
-//     create_env_lst(envp, &env_lst);
-
-//     add_env(&env_lst, "z=hello");
-//     add_env(&env_lst, "ff=boo");
-//     add_env(&env_lst, "d=noob");
-//     add_env(&env_lst, "asd");
-
-//     // print_env_lst(env_lst);
-
-//     unset_env(&env_lst, "d");
-
-
-//     // print_env_lst(env_lst);
-//     // printf("%d\n", i);
-
-//     return 0;
-// }

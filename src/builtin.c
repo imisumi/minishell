@@ -77,10 +77,12 @@ void	builtin_unset(t_cmd_list *lst, t_list *env_lst)
 	unset_env(&env_lst, lst->args[1]);
 }
 
+
 void	builtin_export(t_cmd_list *lst, t_list *env_lst)
 {
 	add_env(&env_lst, lst->args[1]);
 }
+
 
 void	builtin_cd(t_cmd_list *lst, t_list *envp)
 {
@@ -88,6 +90,7 @@ void	builtin_cd(t_cmd_list *lst, t_list *envp)
 	char	*temp;
 	int		check;
 
+	printf("cd\n");
 	check = 0;
 	cwd = getcwd(NULL, 0);
 	if (lst->args[1] == NULL)
@@ -98,37 +101,61 @@ void	builtin_cd(t_cmd_list *lst, t_list *envp)
 	if (check == -1)
 		return ;
 	temp = ft_strjoin("OLDPWD=", cwd);
-	printf("old pwd = %s\n", temp);
+	// printf("old pwd:%s\n", temp);
 	add_env(&envp, temp);
+	// add_env(&envp, "export hello=123");
 	free(temp);
 	free(cwd);
 	cwd = getcwd(NULL, 0);
 	temp = ft_strjoin("PWD=", cwd);
-	printf("new pwd = %s\n", temp);
+	// printf("new pwd = %s\n", temp);
 	add_env(&envp, temp);
 	free(temp);
 	free(cwd);
 	// printf("%d\n", check);
 }
 
-void run_builtin(t_cmd_list *lst, t_list *env_lst)
+// void run_builtin(t_cmd_list *lst, t_list *env_lst)
+// {
+// 	char	*cwd;
+// 	// printf("%s\n", lst->cmd);
+// 	if (strcmp(lst->cmd, "pwd") == 0)
+// 	{
+// 		cwd = getcwd(NULL, 0);
+// 		printf("%s\n", cwd);
+// 		free(cwd);
+// 	}
+// 	if (strcmp(lst->cmd, "echo") == 0)
+// 		builtin_echo(lst);
+// 	if (strcmp(lst->cmd, "env") == 0)
+// 		print_env_lst(env_lst);
+// 	if (strcmp(lst->cmd, "unset") == 0)
+// 		builtin_unset(lst, env_lst);
+// 	if (strcmp(lst->cmd, "export") == 0)
+// 		builtin_export(lst, env_lst);
+// 	if (strcmp(lst->cmd, "cd") == 0)
+// 		builtin_cd(lst, env_lst);
+// }
+
+
+void run_builtin(t_data d)
 {
 	char	*cwd;
 	// printf("%s\n", lst->cmd);
-	if (strcmp(lst->cmd, "pwd") == 0)
+	if (strcmp(d.cmd_list->cmd, "pwd") == 0)
 	{
 		cwd = getcwd(NULL, 0);
 		printf("%s\n", cwd);
 		free(cwd);
 	}
-	if (strcmp(lst->cmd, "echo") == 0)
-		builtin_echo(lst);
-	if (strcmp(lst->cmd, "env") == 0)
-		print_env_lst(env_lst);
-	if (strcmp(lst->cmd, "unset") == 0)
-		builtin_unset(lst, env_lst);
-	if (strcmp(lst->cmd, "export") == 0)
-		builtin_export(lst, env_lst);
-	if (strcmp(lst->cmd, "cd") == 0)
-		builtin_cd(lst, env_lst);
+	if (strcmp(d.cmd_list->cmd, "echo") == 0)
+		builtin_echo(d.cmd_list);
+	if (strcmp(d.cmd_list->cmd, "env") == 0)
+		print_env_lst(d.env_lst);
+	if (strcmp(d.cmd_list->cmd, "unset") == 0)
+		builtin_unset(d.cmd_list, d.env_lst);
+	if (strcmp(d.cmd_list->cmd, "export") == 0)
+		builtin_export(d.cmd_list, d.env_lst);
+	if (strcmp(d.cmd_list->cmd, "cd") == 0)
+		builtin_cd(d.cmd_list, d.env_lst);
 }

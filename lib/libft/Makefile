@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ichiro <ichiro@student.42.fr>              +#+  +:+       +#+         #
+#    By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/06 12:43:01 by imisumi           #+#    #+#              #
-#    Updated: 2023/06/11 03:51:43 by ichiro           ###   ########.fr        #
+#    Updated: 2023/08/04 01:11:26 by imisumi-wsl      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,20 @@ SRCS =	ft_isalpha.c ft_isdigit.c ft_isalnum.c ft_isascii.c ft_isprint.c \
 		ft_strtrim.c ft_split.c ft_itoa.c \
 		ft_strmapi.c ft_striteri.c ft_putchar_fd.c \
 		ft_putstr_fd.c ft_putendl_fd.c ft_putnbr_fd.c \
-		gnl/get_next_line.c gnl/get_next_line_utils.c
+		gnl/get_next_line.c gnl/get_next_line_utils.c \
+		ft_lst_to_array_rev.c	\
+		ft_lst_to_array.c		\
+		ft_lstadd_back.c		\
+		ft_lstadd_front.c		\
+		ft_lstclear.c			\
+		ft_lstdelone.c		\
+		ft_lstiter.c			\
+		ft_lstlast.c			\
+		ft_lstmap.c			\
+		ft_lstnew_front.c		\
+		ft_lstnew_back.c		\
+		ft_lstnew.c			\
+		ft_lstsize.c	
 
 OBJS = $(addprefix $(OBJS_DIR)/,$(SRCS:.c=.o))
 

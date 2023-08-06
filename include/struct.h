@@ -6,18 +6,14 @@
 /*   By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:39:57 by imisumi-wsl       #+#    #+#             */
-/*   Updated: 2023/07/28 20:10:19 by imisumi-wsl      ###   ########.fr       */
+/*   Updated: 2023/08/04 16:51:11 by imisumi-wsl      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STRUCT_H
 # define STRUCT_H
 
-typedef struct s_list
-{
-	void			*content;
-	struct s_list	*next;
-}					t_list;
+typedef struct s_list t_list;
 
 typedef enum s_redir_type
 {
@@ -47,6 +43,7 @@ typedef struct s_cmd_list
 
 typedef struct s_data
 {
+	// char		*local_dir;
 	t_cmd_list	*cmd_list;
 	t_list		*env_lst;
 }	t_data;

@@ -1,6 +1,8 @@
 
 #include "../include/pipe.h"
 
+extern char *local_dir;
+
 uint32_t lst_size(t_list *lst)
 {
 	uint32_t i = 0;
@@ -189,7 +191,10 @@ void	pipex(t_data data)
 		if (cmd == true)
 		{
 			if (check_builtin(temp->cmd) == true)
-				run_builtin(temp, data.env_lst);
+			{
+				// run_builtin(temp, data.env_lst);
+				run_builtin(data);
+			}
 			else
 			{
 				ret = fork();
@@ -221,74 +226,54 @@ void	pipex(t_data data)
 
 void temp_cmd(t_cmd_list **lst, char *cmd, char **args);
 void temp_cmd_pipe(t_cmd_list **lst, char **arg1, char **arg2);
+t_list	*init_env_lst(char **envp);
 
 int main(int argc, char *argv[], char *envp[])
 {
 	t_data data;
 	bool is_running = true;
 	data.env_lst = NULL;
-	create_env_lst(envp, &data.env_lst);
+	char * temp = getcwd(NULL, 0);
+	local_dir = ft_strjoin(temp, "/.env.ms");
+	free(temp);
+	// printf("%s\n", data.local_dir);
+	// create_env_lst(envp, &data.env_lst);
+	data.env_lst = init_env_lst(envp);
 	// printf("%s\n", getcwd(NULL, 0));
 
-	// cmd_one(&data.cmd_list);
-	// cmd_two(&data.cmd_list);
-	// cmd_three(&data.cmd_list);
-	// cmd_four(&data.cmd_list);
-	// cmd_five(&data.cmd_list);
-	// cmd_six(&data.cmd_list);
-	// cmd_seven(&data.cmd_list);
-	// cmd_eight(&data.cmd_list);
-	// cmd_nine(&data.cmd_list);
-	// cmd_ten(&data.cmd_list);
-	// cmd_eleven(&data.cmd_list);
 	while (is_running)
 	{
 		char *line = readline("");
 		add_history(line);
-		// char *line = "ls";
 		if (strcmp(line, "exit") == 0)
 			exit(0);
 		if (line)
 		{
-			// char **args = ft_split(line, ' ');
 			char **args;
-			// if (strchr(line, '|') != NULL)
-			// {
-			// 	// printf("PIPE\n");
-			// 	args = ft_split(line, '|');
-			// 	// args = ft_split(args[1], ' ');
-			// 	// for (int i = 0; args[i]; i++)
-			// 	// 	printf("%s\n", args[i]);
+			if (strchr(line, '|') != NULL)
+			{
+				args = ft_split(line, '|');
 
-			// 	char **arg1 = ft_split(args[0], ' ');
-			// 	char **arg2 = ft_split(args[1], ' ');
-			// 	// temp_cmd(&data.cmd_list, arg1[0], arg1);
-			// 	// pipex(data);
-			// 	// if (arg1[0] && arg2[0])
-			// 	// {
-			// 	// 	// printf("CHECK\n");
-			// 	// 	temp_cmd_pipe(&data.cmd_list, arg1, arg2);
-			// 	// 	pipex(data);
-			// 	// }
-			// 	temp_cmd_pipe(&data.cmd_list, arg1, arg2);
-			// 	pipex(data);
-			// }
-			// else
-			// {
-			// 	args = ft_split(line, ' ');
-			// 	if (args[0]) {
-			// 		temp_cmd(&data.cmd_list, args[0], args);
-			// 		pipex(data);
-			// 	}
-			// }
-			args = ft_split(line, ' ');
-			if (args[0]) {
-				temp_cmd(&data.cmd_list, args[0], args);
+				char **arg1 = ft_split(args[0], ' ');
+				char **arg2 = ft_split(args[1], ' ');
+				temp_cmd_pipe(&data.cmd_list, arg1, arg2);
 				pipex(data);
 			}
-
+			else
+			{
+				args = ft_split(line, ' ');
+				if (args[0]) {
+					temp_cmd(&data.cmd_list, args[0], args);
+					pipex(data);
+				}
+			}
+			// args = ft_split(line, ' ');
+			// if (args[0]) {
+			// 	temp_cmd(&data.cmd_list, args[0], args);
+			// 	pipex(data);
+			// }
+			free(line);
 		}
 		printf("\n");
-		// exit(0);
 	}
 }

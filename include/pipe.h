@@ -22,6 +22,7 @@
 
 # include "struct.h"
 
+
 // typedef enum s_redir_type
 // {
 // 	REDIR_PIPE = 0,
@@ -96,7 +97,8 @@ void add_append_output_node(t_cmd_list **lst, char *file);
 
 
 bool	check_builtin(char *cmd);
-void	run_builtin(t_cmd_list *lst, t_list *env_lst);
+// void	run_builtin(t_cmd_list *lst, t_list *env_lst);
+void	run_builtin(t_data d);
 
 
 //! env
@@ -109,12 +111,15 @@ void str_cpy(char *dest, char *src);
 void print_env_lst(t_list *env_lst);
 
 void add_env(t_list **env_lst, char *env);
+// void add_env(t_data d);
 
 void unset_env(t_list **env_lst, char *env);
+// void unset_env(t_data d);
 
 void create_env_lst(char *envp[], t_list **env_lst);
 
 void	fill_env_file(t_list *env_lst);
+// void	fill_env_file(t_data d);
 
 char	*get_env(char **envp, char *path);
 char	**lst_to_arr(t_list *lst);

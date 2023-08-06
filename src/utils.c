@@ -32,23 +32,19 @@ uint32_t list_size(t_cmd_list *list)
 
 t_cmd_list *create_cmd_list(char *cmd, char **args)
 {
-	//print args
-	// for (int i = 0; args[i]; i++)
-	// 	printf("args[%d]: %s\n", i, args[i]);
-
 	t_cmd_list *cmd_list;
 
 	cmd_list = calloc(sizeof(t_cmd_list), 1);
-	cmd_list->cmd = calloc(sizeof(char), strlen(cmd) + 1);
-	str_cpy(cmd_list->cmd, cmd);
+	// cmd_list->cmd = calloc(sizeof(char), strlen(cmd) + 1);
+	// str_cpy(cmd_list->cmd, cmd);
+	cmd_list->cmd = ft_strdup(cmd);
 
 	cmd_list->args = calloc(sizeof(char *), 10);
 	for (int i = 0; args[i]; i++)
 	{
-		cmd_list->args[i] = calloc(sizeof(char), 10);
-		// strcpy(cmd_list->args[i], args[i]);
-		str_cpy(cmd_list->args[i], args[i]);
-		// printf("check\n");
+		// cmd_list->args[i] = calloc(sizeof(char), 10);
+		// str_cpy(cmd_list->args[i], args[i]);
+		cmd_list->args[i] = ft_strdup(args[i]);
 	}
 	cmd_list->next = NULL;
 	cmd_list->redir = NULL;
