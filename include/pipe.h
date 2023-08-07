@@ -72,7 +72,8 @@ void print_args(t_cmd_list *lst);
 
 void print_redir_list(t_redir *lst);
 
-bool check_redir_list(t_redir *lst, int *fd);
+// bool check_redir_list(t_redir *lst, int *fd);
+bool check_redir_list(t_cmd_list *lst, int *fd);
 
 
 

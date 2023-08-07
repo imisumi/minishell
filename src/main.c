@@ -3,6 +3,7 @@
 
 extern char *local_dir;
 
+
 uint32_t lst_size(t_list *lst)
 {
 	uint32_t i = 0;
@@ -48,17 +49,6 @@ char	*get_env(char **envp, char *path)
 	return (NULL);
 }
 
-// char *get_env(t_list *envp, char *env)
-// {
-// 	while (envp)
-// 	{
-// 		if (strcmp(envp->content, env) == 0)
-// 			return (envp->content + strlen(env));
-// 		envp = envp->next;
-// 	}
-// 	return (NULL);
-// }
-
 char	**env_paths(char **envp)
 {
 	int		i;
@@ -72,10 +62,6 @@ char	**env_paths(char **envp)
 	if (env == NULL)
 		return (NULL);
 	paths = ft_split(env, ':');
-	// if (paths == NULL)
-		// exit_msg("Malloc in ft_split has failed", NULL, 1);
-	// printf("HEY\n");
-	// printf("%s\n", paths[0]);
 	i = 0;
 	while (paths[i])
 	{
@@ -183,7 +169,8 @@ void	pipex(t_data data)
 	while (temp)
 	{
 		// fprintf(stderr, "%p\n", temp->redir);
-		cmd = check_redir_list(temp->redir, fd);
+		// cmd = check_redir_list(temp->redir, fd);
+		cmd = check_redir_list(temp, fd);
 		dup2(fd[1], STDOUT_FILENO); 
 		close(fd[1]);
 
@@ -236,11 +223,7 @@ int main(int argc, char *argv[], char *envp[])
 	char * temp = getcwd(NULL, 0);
 	local_dir = ft_strjoin(temp, "/.env.ms");
 	free(temp);
-	// printf("%s\n", data.local_dir);
-	// create_env_lst(envp, &data.env_lst);
 	data.env_lst = init_env_lst(envp);
-	// printf("%s\n", getcwd(NULL, 0));
-
 	while (is_running)
 	{
 		char *line = readline("");
@@ -267,11 +250,6 @@ int main(int argc, char *argv[], char *envp[])
 					pipex(data);
 				}
 			}
-			// args = ft_split(line, ' ');
-			// if (args[0]) {
-			// 	temp_cmd(&data.cmd_list, args[0], args);
-			// 	pipex(data);
-			// }
 			free(line);
 		}
 		printf("\n");

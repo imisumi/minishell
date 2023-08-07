@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+         #
+#    By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/28 00:51:40 by ichiro            #+#    #+#              #
-#    Updated: 2023/08/04 02:18:56 by imisumi-wsl      ###   ########.fr        #
+#    Updated: 2023/08/07 12:56:52 by imisumi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -73,11 +73,11 @@
 
 
 all:
-	@gcc $(if $(DEBUG), -g -fsanitize=address) ./src/pipe.c ./src/utils.c ./src/env.c ./src/commands.c \
+	@gcc $(if $(DEBUG), -g -fsanitize=address) ./src/main.c ./src/utils.c ./src/env.c ./src/commands.c \
 		./src/redir_utils.c ./src/builtin.c ./lib/libft/libft.a -lreadline
 
 run:
-	@gcc ./src/pipe.c ./src/utils.c ./src/env.c ./src/commands.c \
+	@gcc ./src/main.c ./src/utils.c ./src/env.c ./src/commands.c \
 		./src/redir_utils.c ./src/builtin.c ./lib/libft/libft.a -lreadline \
 		&& ./a.out
 
