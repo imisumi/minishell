@@ -111,16 +111,16 @@ void str_cpy(char *dest, char *src);
 
 void print_env_lst(t_list *env_lst);
 
-void add_env(t_list **env_lst, char *env);
-// void add_env(t_data d);
+// void add_env(t_list **env_lst, char *env);
+void add_env(t_data d, char *env);
 
-void unset_env(t_list **env_lst, char *env);
-// void unset_env(t_data d);
+// void unset_env(t_list **env_lst, char *env);
+void unset_env(t_data d, char *env);
 
 void create_env_lst(char *envp[], t_list **env_lst);
 
-void	fill_env_file(t_list *env_lst);
-// void	fill_env_file(t_data d);
+// void	fill_env_file(t_list *env_lst);
+void	fill_env_file(t_data d);
 
 char	*get_env(char **envp, char *path);
 char	**lst_to_arr(t_list *lst);

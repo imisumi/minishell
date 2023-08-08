@@ -4,21 +4,20 @@
 // #include "../include/struct.h"
 #include "../include/pipe.h"
 
-char *local_dir;
-
-void	fill_env_file(t_list *env_lst)
+void	fill_env_file(t_data d)
 {
-	// char * temp = getcwd(NULL, 0);
-	// local_dir = ft_strjoin(temp, "/.env.ms");
-	// free(temp);
-
-	// printf("filling env file\n");
 	t_list *temp;
 	char *temp_env;
 	ssize_t bytes_written;
 	int	fd;
+	t_list *env_lst = d.env_lst;
 
-	fd = open(local_dir, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	fd = open(d.utils.local_dir, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if (fd == -1)
+	{
+		printf("error opening file\n");
+		exit(1);
+	}
 	temp = env_lst;
 	while (temp)
 	{
@@ -54,10 +53,11 @@ void print_env_lst(t_list *env_lst)
 	}
 }
 
-void	check_existing_env(t_list **env_lst, char *env)
+void	check_existing_env(t_data d, char *env)
 {
 	int		i;
 	char	*str;
+	t_list **env_lst = &d.env_lst;
 
 	i = 0;
 	while(env[i] != '=')
@@ -65,43 +65,62 @@ void	check_existing_env(t_list **env_lst, char *env)
 	str = ft_substr(env, 0, i);
 	if (!str)
 		exit(1);
-	unset_env(env_lst, str);
+	unset_env(d, str);
 	free(str);
 }
 
-void add_env(t_list **env_lst, char *env)
+// void	add_check_utils(t_utils utils, char *env)
+// {
+// 	if (strcmp(env, "PWD") == 0)
+// 		utils.pwd[0] = 1;
+// 	if (strcmp(env, "OLDPWD") == 0)
+// 		utils.oldpwd[0] = 1;
+// }
+
+// void	unset_check_utils(t_utils utils, char *env)
+// {
+// 	if (strcmp(env, "PWD") == 0)
+// 		utils.pwd[0] = -1;
+// 	// printf("env: %s\n", env);
+// 	if (strcmp(env, "OLDPWD") == 0) {
+// 		// printf("oldpwd is false\n");
+// 		utils.oldpwd[0] = -1;
+// 	}
+// }
+
+void add_env(t_data d, char *env)
 {
 	char	*temp;
 	t_list	*new;
+	t_list **env_lst = &d.env_lst;
 
 	if (ft_strchr(env, '=') == NULL || env[0] == '=')
 	{
 		printf("invalid env variable: %s\n", env);
 		return ;
 	}
+	// add_check_utils(&d.utils, env);
 	printf("adding env: %s\n", env);
-	check_existing_env(env_lst, env);
+	check_existing_env(d, env);
 	temp = strdup(env);
-	// printf("add temp: %s\n", temp);
 	new = ft_lstnew(temp);
-	// list_add_back(env_lst, new);
 	ft_lstadd_back(env_lst, new);
-	fill_env_file(*env_lst);
+	fill_env_file(d);
 }
 
-
-
-void	unset_env(t_list **env_lst, char *env)
+void	unset_env(t_data d, char *env)
 {
 	t_list	*temp;
 	t_list	*prev;
 	char	*temp_env;
 
+	t_list **env_lst = &d.env_lst;
 	if (env[0] == '=')
 	{
 		printf("= is not a valid env variable\n");
 		return ;
 	}
+	// unset_check_utils(d.utils, env);
 	prev = NULL;
 	temp_env = ft_strjoin(env, "=");
 	temp = *env_lst;
@@ -115,18 +134,18 @@ void	unset_env(t_list **env_lst, char *env)
 			else
 				prev->next = temp->next;
 			free(temp_env);
-			fill_env_file(*env_lst);
+			fill_env_file(d);
 			return ;
 		}
 		prev = temp;
 		temp = temp->next;
 	}
 	free(temp_env);
-	fill_env_file(*env_lst);
+	fill_env_file(d);
 }
 
 
-t_list	*init_env_lst(char **envp)
+void	init_env_lst(t_data *d, char **envp)
 {
 	t_list	*env_lst;
 	t_list	*temp;
@@ -146,6 +165,7 @@ t_list	*init_env_lst(char **envp)
 		ft_lstadd_back(&env_lst, temp);
 		i++;
 	}
-	fill_env_file(env_lst);
-	return (env_lst);
+	d->env_lst = env_lst;
+	fill_env_file(*d);
+	// return (env_lst);
 }

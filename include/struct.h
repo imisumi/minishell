@@ -6,12 +6,14 @@
 /*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:39:57 by imisumi-wsl       #+#    #+#             */
-/*   Updated: 2023/08/07 12:54:06 by imisumi          ###   ########.fr       */
+/*   Updated: 2023/08/07 15:16:52 by imisumi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STRUCT_H
 # define STRUCT_H
+
+#include <stdbool.h>
 
 typedef struct s_list t_list;
 
@@ -40,9 +42,16 @@ typedef struct s_cmd_list
 	struct s_cmd_list	*next;
 }	t_cmd_list;
 
+typedef struct s_utils
+{
+	char	*local_dir;
+	int		pwd[1];
+	int		oldpwd[1];
+}	t_utils;
+
 typedef struct s_data
 {
-	// char		*local_dir;
+	t_utils		utils;
 	t_cmd_list	*cmd_list;
 	t_list		*env_lst;
 }	t_data;

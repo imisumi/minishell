@@ -1,7 +1,7 @@
 
 #include "../include/pipe.h"
 
-extern char *local_dir;
+// extern char *local_dir;
 
 
 uint32_t lst_size(t_list *lst)
@@ -41,7 +41,7 @@ char	*get_env(char **envp, char *path)
 		env = ft_strnstr(envp[i], path, ft_strlen(path));
 		if (env != NULL)
 		{
-			env = env + 5;
+			env = env + ft_strlen(path);
 			return (env);
 		}
 		i++;
@@ -213,17 +213,34 @@ void	pipex(t_data data)
 
 void temp_cmd(t_cmd_list **lst, char *cmd, char **args);
 void temp_cmd_pipe(t_cmd_list **lst, char **arg1, char **arg2);
-t_list	*init_env_lst(char **envp);
+// t_list	*init_env_lst(t_data d, char **envp);
+void	init_env_lst(t_data *d, char **envp);
+
+t_utils	init_utils()
+{
+	t_utils	utils;
+	char	*temp;
+
+	temp = getcwd(NULL, 0);
+	utils.local_dir = ft_strjoin(temp, "/.env.ms");
+	free(temp);
+	utils.pwd[0] = 1;
+	utils.oldpwd[0] = 1;
+	return utils;
+}
 
 int main(int argc, char *argv[], char *envp[])
 {
 	t_data data;
 	bool is_running = true;
 	data.env_lst = NULL;
-	char * temp = getcwd(NULL, 0);
-	local_dir = ft_strjoin(temp, "/.env.ms");
-	free(temp);
-	data.env_lst = init_env_lst(envp);
+	// char * temp = getcwd(NULL, 0);
+	// local_dir = ft_strjoin(temp, "/.env.ms");
+	// data.utils.local_dir = ft_strjoin(temp, "/.env.ms");
+	// free(temp);
+	data.utils = init_utils();
+	init_env_lst(&data, envp);
+	add_env(data, "OLDPWD=");
 	while (is_running)
 	{
 		char *line = readline("");

@@ -1,8 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/07 14:31:38 by imisumi           #+#    #+#             */
+/*   Updated: 2023/08/07 14:33:10 by imisumi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 
 #include "../include/pipe.h"
-
-
-
 
 void str_cpy(char *dest, char *src)
 {
@@ -76,55 +85,11 @@ void print_args(t_cmd_list *lst)
 			i++;
 		}
 		temp = temp->next;
-        printf("\n");
+		printf("\n");
 	}
 	printf("\n");
 	// printf("check\n");
 }
-
-
-// bool str_cmp(char *s1, char *s2)
-// {
-// 	int	i;
-
-// 	if(!s1 || !s2)
-// 		return (false);
-// 	i = 0;
-// 	while (s1[i] && s2[i])
-// 	{
-// 		if (s1[i] != s2[i])
-// 			return (false);
-// 		i++;
-// 	}
-// 	return (true);
-// }
-
-// void run_builtin(t_cmd_list *lst)
-// {
-// 	char	*cwd;
-// 	// printf("%s\n", lst->cmd);
-// 	if (strcmp(lst->cmd, "pwd") == 0)
-// 	{
-// 		cwd = getcwd(NULL, 0);
-// 		printf("%s\n", cwd);
-// 		free(cwd);
-// 	}
-// 	if (strcmp(lst->cmd, "echo") == 0)
-// 	{
-// 		if (str_cmp(lst->args[1], "-n") == true)
-// 		{
-// 			if (lst->args[2] == NULL)
-// 				return ;
-// 			printf("%s", lst->args[2]);
-// 		}
-// 		else
-// 		{
-// 			if (lst->args[1] == NULL)
-// 				return ;
-// 			printf("%s\n", lst->args[1]);
-// 		}
-// 	}
-// }
 
 //! redir utils
 
