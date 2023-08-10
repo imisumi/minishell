@@ -54,13 +54,13 @@
 // 	t_cmd_list	*cmd_list;
 // }	t_data;
 
-void str_cpy(char *dest, char *src);
 
-uint32_t list_size(t_cmd_list *list);
+
+uint32_t cmd_list_size(t_cmd_list *list);
 
 t_cmd_list *create_cmd_list(char *cmd, char **args);
 
-void	add_back(t_cmd_list **list, t_cmd_list *new);
+void	cmd_add_back(t_cmd_list **list, t_cmd_list *new);
 
 void redir_add_back(t_cmd_list **head, t_redir *new);
 
@@ -107,7 +107,7 @@ t_list	*ft_lstnew(void *content);
 
 void list_add_back(t_list **head, t_list *new);
 
-void str_cpy(char *dest, char *src);
+
 
 void print_env_lst(t_list *env_lst);
 

@@ -141,4 +141,6 @@ void run_builtin(t_data d)
 		builtin_export(d);
 	if (strcmp(d.cmd_list->cmd, "cd") == 0)
 		builtin_cd(d);
+	// if (strcmp(d.cmd_list->cmd, "exit") == 0)
+	// 	exit(0);
 }

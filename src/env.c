@@ -69,25 +69,6 @@ void	check_existing_env(t_data d, char *env)
 	free(str);
 }
 
-// void	add_check_utils(t_utils utils, char *env)
-// {
-// 	if (strcmp(env, "PWD") == 0)
-// 		utils.pwd[0] = 1;
-// 	if (strcmp(env, "OLDPWD") == 0)
-// 		utils.oldpwd[0] = 1;
-// }
-
-// void	unset_check_utils(t_utils utils, char *env)
-// {
-// 	if (strcmp(env, "PWD") == 0)
-// 		utils.pwd[0] = -1;
-// 	// printf("env: %s\n", env);
-// 	if (strcmp(env, "OLDPWD") == 0) {
-// 		// printf("oldpwd is false\n");
-// 		utils.oldpwd[0] = -1;
-// 	}
-// }
-
 void add_env(t_data d, char *env)
 {
 	char	*temp;
@@ -100,7 +81,7 @@ void add_env(t_data d, char *env)
 		return ;
 	}
 	// add_check_utils(&d.utils, env);
-	printf("adding env: %s\n", env);
+	// printf("adding env: %s\n", env);
 	check_existing_env(d, env);
 	temp = strdup(env);
 	new = ft_lstnew(temp);

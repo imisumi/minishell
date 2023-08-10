@@ -22,7 +22,7 @@ t_redir	*new_redir_node()
 	new = calloc(sizeof(t_redir), 1);
 	if (new == NULL)
 		exit(1);
-	new->file = calloc(sizeof(char), 64);
+	new->file = NULL;
 	new->type = REDIR_PIPE;
 	new->next = NULL;
 	return (new);

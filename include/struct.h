@@ -6,7 +6,7 @@
 /*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:39:57 by imisumi-wsl       #+#    #+#             */
-/*   Updated: 2023/08/07 15:16:52 by imisumi          ###   ########.fr       */
+/*   Updated: 2023/08/10 16:14:48 by imisumi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,6 @@ typedef struct s_cmd_list
 typedef struct s_utils
 {
 	char	*local_dir;
-	int		pwd[1];
-	int		oldpwd[1];
 }	t_utils;
 
 typedef struct s_data

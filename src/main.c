@@ -138,7 +138,7 @@ void	exec_cmd(t_cmd_list *lst, t_list *env_lst)
 	else
 	{
 		cmd = find_path(lst->cmd, paths);
-		printf("%s\n", cmd);
+		// printf("%s\n", cmd);
 		execve(cmd, lst->args, envp);
 		// perror(cmd);
 		// _Exit(1);
@@ -164,22 +164,22 @@ void	pipex(t_data data)
 
 	int ret;
 	int i = 0;
-	uint32_t CMD_NUMS = list_size(data.cmd_list);
-
+	uint32_t CMD_NUMS = cmd_list_size(data.cmd_list);
+	if (CMD_NUMS == 1 && strcmp(temp->cmd, "exit") == 0)
+	{
+		printf("exiting\n");
+		exit(0);
+	}
+	// printf("%d\n", CMD_NUMS);
 	while (temp)
 	{
-		// fprintf(stderr, "%p\n", temp->redir);
-		// cmd = check_redir_list(temp->redir, fd);
 		cmd = check_redir_list(temp, fd);
 		dup2(fd[1], STDOUT_FILENO); 
 		close(fd[1]);
-
-
 		if (cmd == true)
 		{
 			if (check_builtin(temp->cmd) == true)
 			{
-				// run_builtin(temp, data.env_lst);
 				run_builtin(data);
 			}
 			else
@@ -189,6 +189,7 @@ void	pipex(t_data data)
 				{
 					// printf("cmd: %s\n", temp->cmd);
 					exec_cmd(temp, data.env_lst);
+					// perror("");
 					// execve(temp->cmd, temp->args, envp);
 					exit(1);
 				}
@@ -196,15 +197,13 @@ void	pipex(t_data data)
 		}
 		temp = temp->next;
 		i++;
-	} // for loop
+	} // while loop
 
 	int status;
 	for (int i = 0; i < CMD_NUMS; i++)
 	{
 		wait(&status);
 	}
-	// print_env_lst(data.env_lst);
-	// printf("%s\n", getcwd(NULL, 0));
 	dup2(fd[2], STDIN_FILENO);
 	dup2(fd[3], STDOUT_FILENO);
 	close(fd[2]);
@@ -224,8 +223,6 @@ t_utils	init_utils()
 	temp = getcwd(NULL, 0);
 	utils.local_dir = ft_strjoin(temp, "/.env.ms");
 	free(temp);
-	utils.pwd[0] = 1;
-	utils.oldpwd[0] = 1;
 	return utils;
 }
 
@@ -243,10 +240,10 @@ int main(int argc, char *argv[], char *envp[])
 	add_env(data, "OLDPWD=");
 	while (is_running)
 	{
-		char *line = readline("");
+		char *line = readline("Minishell$ ");
 		add_history(line);
-		if (strcmp(line, "exit") == 0)
-			exit(0);
+		// if (strcmp(line, "exit") == 0)
+		// 	exit(0);
 		if (line)
 		{
 			char **args;
