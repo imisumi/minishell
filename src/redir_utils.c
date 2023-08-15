@@ -1,32 +1,5 @@
 #include "../include/pipe.h"
 
-void redir_add_back(t_cmd_list **head, t_redir *new)
-{
-	if ((*head)->redir == NULL)
-		(*head)->redir = new;
-	else
-	{
-		t_redir *current = (*head)->redir;
-		while (current->next != NULL)
-		{
-			current = current->next;
-		}
-		current->next = new;
-	}
-}
-
-t_redir	*new_redir_node()
-{
-	t_redir *new;
-
-	new = calloc(sizeof(t_redir), 1);
-	if (new == NULL)
-		exit(1);
-	new->file = NULL;
-	new->type = REDIR_PIPE;
-	new->next = NULL;
-	return (new);
-}
 
 void check_redir(t_redir *redir, int fd[])
 {

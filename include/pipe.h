@@ -11,6 +11,7 @@
 # include <fcntl.h>
 # include <stdbool.h>
 # include <string.h>
+# include <signal.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 // #include <readline/readline.h>
@@ -23,48 +24,45 @@
 # include "struct.h"
 
 
-// typedef enum s_redir_type
-// {
-// 	REDIR_PIPE = 0,
-// 	REDIR_INPUT = 1,
-// 	REDIR_OUTPUT = 2,
-// 	REDIR_INPUT_APPEND = 3,
-// 	REDIR_OUTPUT_APPEND = 4
-// } t_redir_type;
+# define BLACK "\033[0;30m"
+# define RED "\033[0;31m"
+# define GREEN "\033[0;32m"
+# define BROWN "\033[0;33m"
+# define BLUE "\033[0;34m"
+# define PURPLE "\033[0;35m"
+# define CYAN "\033[0;36m"
+# define GRAY "\033[0;37m"
+# define DARK_GRAY "\033[1;30m"
+# define LIGHT_RED "\033[1;31m"
+# define LIGHT_GREEN "\033[1;32m"
+# define YELLOW "\033[1;33m"
+# define LIGHT_BLUE "\033[1;34m"
+# define LIGHT_PURPLE "\033[1;35m"
+# define LIGHT_CYAN "\033[1;36m"
+# define WHITE "\033[1;37m"
+// # define PINK "\033[38;5;206m"
+# define PINK "\033[1;38;5;206m"
+# define PINK2 "\033[1;35m"
+# define RESET "\033[0m"
 
-// typedef struct s_redir
-// {
-// 	char			*file;
-// 	t_redir_type	type;
-// 	struct s_redir	*next;
-// }	t_redir;
-
-// typedef struct s_cmd_list
-// {
-// 	char	*cmd;
-// 	char	**args;
-// 	t_redir	*redir;
-
-// 	struct s_cmd_list	*next;
-// }	t_cmd_list;
-
-
-// typedef struct s_data
-// {
-// 	t_cmd_list	*cmd_list;
-// }	t_data;
-
-
+# define COL1 "\033[30;1m"
+# define COL2 "\033[31;1m"
+# define COL3 "\033[32;1m"
+# define COL4 "\033[33;1m"
+# define COL5 "\033[34;1m"
+# define COL6 "\033[35;1m"
+# define COL7 "\033[36;1m"
+# define COL8 "\033[37;1m"
 
 uint32_t cmd_list_size(t_cmd_list *list);
 
 t_cmd_list *create_cmd_list(char *cmd, char **args);
 
-void	cmd_add_back(t_cmd_list **list, t_cmd_list *new);
+void	cmd_list_add_back(t_cmd_list **list, t_cmd_list *new);
 
 void redir_add_back(t_cmd_list **head, t_redir *new);
 
-t_redir	*new_redir_node();
+t_redir	*redir_new_node();
 
 void check_redir(t_redir *redir, int fd[]);
 
@@ -93,7 +91,7 @@ void cmd_eleven(t_cmd_list **l);
 
 void add_input_node(t_cmd_list **lst, char *file);
 void add_output_node(t_cmd_list **lst, char *file);
-void add_pipe_node(t_cmd_list **lst);
+
 void add_append_output_node(t_cmd_list **lst, char *file);
 
 

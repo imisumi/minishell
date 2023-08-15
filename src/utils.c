@@ -6,7 +6,7 @@
 /*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/07 14:31:38 by imisumi           #+#    #+#             */
-/*   Updated: 2023/08/10 17:00:27 by imisumi          ###   ########.fr       */
+/*   Updated: 2023/08/15 12:26:15 by imisumi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ t_cmd_list *create_cmd_list(char *cmd, char **args)
 	return (cmd_list);
 }
 
-void	cmd_add_back(t_cmd_list **list, t_cmd_list *new)
+void	cmd_list_add_back(t_cmd_list **list, t_cmd_list *new)
 {
 	t_cmd_list *temp;
 
@@ -78,7 +78,7 @@ void print_args(t_cmd_list *lst)
 
 void add_input_node(t_cmd_list **lst, char *file)
 {
-	t_redir *new = new_redir_node();
+	t_redir *new = redir_new_node();
 	new->file = ft_strdup(file);
 	new->type = REDIR_INPUT;
 	redir_add_back(lst, new);
@@ -86,23 +86,15 @@ void add_input_node(t_cmd_list **lst, char *file)
 
 void add_output_node(t_cmd_list **lst, char *file)
 {
-	t_redir *new = new_redir_node();
+	t_redir *new = redir_new_node();
 	new->file = ft_strdup(file);
 	new->type = REDIR_OUTPUT;
 	redir_add_back(lst, new);
 }
 
-void add_pipe_node(t_cmd_list **lst)
-{
-	t_redir *new = new_redir_node();
-	new->type = REDIR_PIPE;
-	new->file = NULL;
-	redir_add_back(lst, new);
-}
-
 void add_append_output_node(t_cmd_list **lst, char *file)
 {
-	t_redir *new = new_redir_node();
+	t_redir *new = redir_new_node();
 	new->file = ft_strdup(file);
 	new->type = REDIR_OUTPUT_APPEND;
 	redir_add_back(lst, new);

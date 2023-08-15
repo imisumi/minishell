@@ -6,7 +6,7 @@
 #    By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/28 00:51:40 by ichiro            #+#    #+#              #
-#    Updated: 2023/08/07 12:56:52 by imisumi          ###   ########.fr        #
+#    Updated: 2023/08/15 12:09:14 by imisumi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -78,7 +78,8 @@ all:
 
 run:
 	@gcc ./src/main.c ./src/utils.c ./src/env.c ./src/commands.c \
-		./src/redir_utils.c ./src/builtin.c ./lib/libft/libft.a -lreadline \
+		./src/redir_utils.c ./src/builtin.c ./src/cmd_list.c ./src/redir_list.c \
+		./lib/libft/libft.a -lreadline \
 		&& ./a.out
 
 clean:

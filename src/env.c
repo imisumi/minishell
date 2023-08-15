@@ -150,3 +150,22 @@ void	init_env_lst(t_data *d, char **envp)
 	fill_env_file(*d);
 	// return (env_lst);
 }
+
+char	*get_env(char **envp, char *path)
+{
+	int		i;
+	char	*env;
+
+	i = 0;
+	while (envp[i])
+	{
+		env = ft_strnstr(envp[i], path, ft_strlen(path));
+		if (env != NULL)
+		{
+			env = env + ft_strlen(path);
+			return (env);
+		}
+		i++;
+	}
+	return (NULL);
+}

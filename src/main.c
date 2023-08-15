@@ -1,19 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/14 13:12:16 by imisumi           #+#    #+#             */
+/*   Updated: 2023/08/15 14:27:32 by imisumi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../include/pipe.h"
-
-// extern char *local_dir;
-
-
-uint32_t lst_size(t_list *lst)
-{
-	uint32_t i = 0;
-	while (lst)
-	{
-		i++;
-		lst = lst->next;
-	}
-	return i;
-}
 
 void	free_2d_arr(char **array)
 {
@@ -28,25 +25,6 @@ void	free_2d_arr(char **array)
 	}
 	if (array)
 		free(array);
-}
-
-char	*get_env(char **envp, char *path)
-{
-	int		i;
-	char	*env;
-
-	i = 0;
-	while (envp[i])
-	{
-		env = ft_strnstr(envp[i], path, ft_strlen(path));
-		if (env != NULL)
-		{
-			env = env + ft_strlen(path);
-			return (env);
-		}
-		i++;
-	}
-	return (NULL);
 }
 
 char	**env_paths(char **envp)
@@ -80,7 +58,7 @@ char	**lst_to_arr(t_list *lst)
 	int		i;
 	char	**envp;
 
-	i = lst_size(lst);
+	i = ft_lstsize(lst);
 	envp = malloc(sizeof(char *) * (i + 1));
 	i = 0;
 	while (lst)
@@ -226,6 +204,24 @@ t_utils	init_utils()
 	return utils;
 }
 
+void	print_handle(void)
+{
+	char *start = "\033[31;1mMS \033[1;38;5;206m➜ \033[1;36m";
+	char *end = "\033[1;34m$\033[0m";
+	char *temp;
+	char *dir;
+	char *ms;
+
+	temp = getcwd(NULL, 0);
+	dir = ft_strrchr(temp, '/') + 1;
+	free(temp);
+	temp = ft_strjoin(start, dir);
+	ms = ft_strjoin(temp, end);
+	free(temp);
+	printf("%s", ms);
+	free(ms);
+}
+
 int main(int argc, char *argv[], char *envp[])
 {
 	t_data data;
@@ -238,12 +234,14 @@ int main(int argc, char *argv[], char *envp[])
 	data.utils = init_utils();
 	init_env_lst(&data, envp);
 	add_env(data, "OLDPWD=");
+
 	while (is_running)
 	{
-		char *line = readline("Minishell$ ");
+		print_handle();
+		char *line = readline(" ");
+
 		add_history(line);
-		// if (strcmp(line, "exit") == 0)
-		// 	exit(0);
+
 		if (line)
 		{
 			char **args;
