@@ -37,72 +37,17 @@
 # define COL7 "\033[36;1m"
 # define COL8 "\033[37;1m"
 
-char	*str_join(const char *s1, const char *s2)
-{
-	char	*str;
-	size_t	i;
-	size_t	j;
-
-	i = 0;
-	j = 0;
-	if (!s1 || !s2)
-		return (NULL);
-	str = calloc(sizeof(char), (strlen(s1) + strlen(s2) + 1));
-	if (!str)
-		return (NULL);
-	while (s1[i] != '\0')
-	{
-		str[i] = s1[i];
-		i++;
-	}
-	while (s2[j] != '\0')
-	{
-		str[i] = s2[j];
-		j++;
-		i++;
-	}
-	return (str);
-}
-
 
 int main(int argc, char *argv[]) {
-	// int pid = fork();
-	// if (pid == -1) {
-	// 	printf("error\n");
-	// 	exit(1);
-	// }
+    char *str = malloc(sizeof(char) * 999999999999999999);
+    if (str == NULL) {
+        perror("malloc");
+        return EXIT_FAILURE; // Return the error code
+    }
 
-	// int i = 0;
-	// if (pid == 0) {
-	// 	while (1) {
-	// 		printf("i = %d\n", i);
-	// 		usleep(50000);
-	// 		i++;
-	// 	}
-	// } else {
-	// 	wait(NULL);
-	// }
-	// return 0;
-	// char * str = "\033[0;35mHello";
-	// printf("%s\n", str);
-	char cwd[1024];
-	if (getcwd(cwd, sizeof(cwd)) == NULL)
-	{
-		printf("getcwd() error\n");
-		exit(EXIT_FAILURE);
-	}
-	char *dir = strrchr(cwd, '/') + 1;
-	// printf("%s%s%s", COL2, "Ms ", RESET);
-	// printf("%s➜ %s", PINK, RESET);
-	// printf("%s%s%s", LIGHT_CYAN, dir, RESET);
-	// printf("%s$%s ", LIGHT_BLUE, RESET);
-	char *str = "\033[31;1mMS \033[1;38;5;206m➜ \033[1;36m";
-	char *end = "\033[1;34m$ \033[0m";
-	str = str_join(str, dir);
-	str = str_join(str, end);
-	printf("%s\n", str);
-	// printf("%s%s%s", COL2, "Ms ", RESET);
-	// printf("%s➜ %s", PINK, RESET);
-	// printf("%s%s%s", LIGHT_CYAN, dir, RESET);
-	// printf("%s$%s ", LIGHT_BLUE, RESET);
+    // Continue with your code here
+
+    free(str);
+
+    return 0; // Return success
 }

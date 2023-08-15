@@ -54,7 +54,7 @@
 # define COL7 "\033[36;1m"
 # define COL8 "\033[37;1m"
 
-uint32_t cmd_list_size(t_cmd_list *list);
+int cmd_list_size(t_cmd_list *list);
 
 t_cmd_list *create_cmd_list(char *cmd, char **args);
 

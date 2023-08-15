@@ -31,12 +31,10 @@ void print_redir_list(t_redir *lst)
 bool check_redir_list(t_cmd_list *lst, int *fd)
 {
 	t_redir *temp = lst->redir;
-
-	int in = 0;
 	int out = 0;
 	int pip = 0;
+
 	dup2(fd[0], STDIN_FILENO);
-	// fd[0] = dup(fd[2]);
 	while(temp)
 	{
 		if(temp->type == REDIR_INPUT)

@@ -1,8 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/07 14:31:38 by imisumi           #+#    #+#             */
+/*   Updated: 2023/08/15 15:17:46 by imisumi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include "../include/pipe.h"
+#include "../../include/pipe.h"
 
-
-bool str_cmp(char *s1, char *s2)
+bool	str_cmp(char *s1, char *s2)
 {
 	int	i;
 
@@ -83,35 +93,61 @@ void	builtin_export(t_data d)
 	add_env(d, d.cmd_list->args[1]);
 }
 
+// void	builtin_cd(t_data d)
+// {
+// 	char	*cwd;
+// 	char	*temp;
+// 	int		check;
+// 	t_cmd_list *lst = d.cmd_list;
+// 	t_list *envp = d.env_lst;
+
+// 	check = 0;
+// 	cwd = getcwd(NULL, 0);
+// 	if (lst->args[1] == NULL)
+// 		check = chdir(get_env(lst_to_arr(envp), "HOME="));
+// 	else
+// 		check = chdir(lst->args[1]);
+// 	if (check == -1)
+// 		return ;
+// 	if (get_env(lst_to_arr(envp), "OLDPWD=") != NULL)
+// 	{
+// 		temp = ft_strjoin("OLDPWD=", cwd);
+// 		add_env(d, temp);
+// 		free(temp);
+// 	}
+// 	free(cwd);
+// 	if (get_env(lst_to_arr(envp), "PWD=") != NULL)
+// 	{
+// 		cwd = getcwd(NULL, 0);
+// 		temp = ft_strjoin("PWD=", cwd);
+// 		add_env(d, temp);
+// 		free(temp);
+// 		free(cwd);
+// 	}
+// }
+
 void	builtin_cd(t_data d)
 {
 	char	*cwd;
 	char	*temp;
 	int		check;
-	t_cmd_list *lst = d.cmd_list;
-	t_list *envp = d.env_lst;
 
-	// printf("cd\n");
 	check = 0;
 	cwd = getcwd(NULL, 0);
-	if (lst->args[1] == NULL)
-		check = chdir(get_env(lst_to_arr(envp), "HOME="));
+	if (d.cmd_list->args[1] == NULL)
+		check = chdir(get_env(lst_to_arr(d.env_lst), "HOME="));
 	else
-		check = chdir(lst->args[1]);
-	// printf("check = %d\n", check);
+		check = chdir(d.cmd_list->args[1]);
 	if (check == -1)
 		return ;
-	// char *env = get_env(lst_to_arr(envp), "OLDPWD=");
-	// env = NULL;
-	// printf("env:::: %s\n", env);
-	if (get_env(lst_to_arr(envp), "OLDPWD=") != NULL)
+	if (get_env(lst_to_arr(d.env_lst), "OLDPWD=") != NULL)
 	{
 		temp = ft_strjoin("OLDPWD=", cwd);
 		add_env(d, temp);
 		free(temp);
 	}
 	free(cwd);
-	if (get_env(lst_to_arr(envp), "PWD=") != NULL)
+	if (get_env(lst_to_arr(d.env_lst), "PWD=") != NULL)
 	{
 		cwd = getcwd(NULL, 0);
 		temp = ft_strjoin("PWD=", cwd);
@@ -124,7 +160,6 @@ void	builtin_cd(t_data d)
 void run_builtin(t_data d)
 {
 	char	*cwd;
-	// printf("%s\n", lst->cmd);
 	if (strcmp(d.cmd_list->cmd, "pwd") == 0)
 	{
 		cwd = getcwd(NULL, 0);

@@ -1,16 +1,23 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-// #include "../include/struct.h"
-#include "../include/pipe.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/07 14:31:38 by imisumi           #+#    #+#             */
+/*   Updated: 2023/08/15 15:12:43 by imisumi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../include/pipe.h"
 
 void	fill_env_file(t_data d)
 {
-	t_list *temp;
-	char *temp_env;
-	ssize_t bytes_written;
-	int	fd;
-	t_list *env_lst = d.env_lst;
+	t_list	*temp;
+	char	*temp_env;
+	ssize_t	bytes_written;
+	int		fd;
 
 	fd = open(d.utils.local_dir, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (fd == -1)
@@ -18,33 +25,28 @@ void	fill_env_file(t_data d)
 		printf("error opening file\n");
 		exit(1);
 	}
-	temp = env_lst;
+	temp = d.env_lst;
 	while (temp)
 	{
 		temp_env = (char *)temp->content;
-		bytes_written = write(fd, temp_env, strlen(temp_env));
+		bytes_written = write(fd, temp_env, ft_strlen(temp_env));
+		if (bytes_written == -1)
+		{
+			printf("error writing to file\n");
+			exit(1);
+		}
 		bytes_written = write(fd, "\n", 1);
+		if (bytes_written == -1)
+		{
+			printf("error writing to file\n");
+			exit(1);
+		}
 		temp = temp->next;
 	}
 	close(fd);
 }
 
-void list_add_back(t_list **head, t_list *new)
-{
-	t_list *temp;
-
-	if (*head == NULL)
-	{
-		*head = new;
-		return ;
-	}
-	temp = *head;
-	while (temp->next != NULL)
-		temp = temp->next;
-	temp->next = new;
-}
-
-void print_env_lst(t_list *env_lst)
+void	print_env_lst(t_list *env_lst)
 {
 	while (env_lst)
 	{
@@ -57,10 +59,9 @@ void	check_existing_env(t_data d, char *env)
 {
 	int		i;
 	char	*str;
-	t_list **env_lst = &d.env_lst;
 
 	i = 0;
-	while(env[i] != '=')
+	while (env[i] != '=')
 		i++;
 	str = ft_substr(env, 0, i);
 	if (!str)
@@ -69,23 +70,20 @@ void	check_existing_env(t_data d, char *env)
 	free(str);
 }
 
-void add_env(t_data d, char *env)
+void	add_env(t_data d, char *env)
 {
 	char	*temp;
 	t_list	*new;
-	t_list **env_lst = &d.env_lst;
 
 	if (ft_strchr(env, '=') == NULL || env[0] == '=')
 	{
 		printf("invalid env variable: %s\n", env);
 		return ;
 	}
-	// add_check_utils(&d.utils, env);
-	// printf("adding env: %s\n", env);
 	check_existing_env(d, env);
 	temp = strdup(env);
 	new = ft_lstnew(temp);
-	ft_lstadd_back(env_lst, new);
+	ft_lstadd_back(&d.env_lst, new);
 	fill_env_file(d);
 }
 
@@ -94,20 +92,21 @@ void	unset_env(t_data d, char *env)
 	t_list	*temp;
 	t_list	*prev;
 	char	*temp_env;
+	t_list	**env_lst;
 
-	t_list **env_lst = &d.env_lst;
+	env_lst = &d.env_lst;
 	if (env[0] == '=')
 	{
 		printf("= is not a valid env variable\n");
 		return ;
 	}
-	// unset_check_utils(d.utils, env);
 	prev = NULL;
 	temp_env = ft_strjoin(env, "=");
 	temp = *env_lst;
-	while(temp)
+	while (temp)
 	{
-		if (ft_strncmp((char *)temp->content, temp_env, ft_strlen(temp_env)) == 0)
+		if (ft_strncmp((char *)temp->content, temp_env, \
+			ft_strlen(temp_env)) == 0)
 		{
 			printf("found env variable: %s\n", (char *)temp_env);
 			if (prev == NULL)
@@ -124,7 +123,6 @@ void	unset_env(t_data d, char *env)
 	free(temp_env);
 	fill_env_file(d);
 }
-
 
 void	init_env_lst(t_data *d, char **envp)
 {
@@ -148,7 +146,6 @@ void	init_env_lst(t_data *d, char **envp)
 	}
 	d->env_lst = env_lst;
 	fill_env_file(*d);
-	// return (env_lst);
 }
 
 char	*get_env(char **envp, char *path)

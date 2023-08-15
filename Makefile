@@ -6,7 +6,7 @@
 #    By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/28 00:51:40 by ichiro            #+#    #+#              #
-#    Updated: 2023/08/15 12:09:14 by imisumi          ###   ########.fr        #
+#    Updated: 2023/08/15 15:36:15 by imisumi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -71,16 +71,28 @@
 # all:
 # 	@gcc ./srcs/main.c ./lib/libft/libft.a && ./a.out
 
+# CFLAGS = -Wall -Werror -Wextra
+
+LIBFT = lib/libft/libft.a
+
+ENV_DIR = ./src/env/
+SRC_DIR = ./src/
+BUILTIN_DIR = ./src/builtins/
+
+SRC =	$(SRC_DIR)main.c \
+		$(SRC_DIR)utils.c \
+		$(SRC_DIR)commands.c \
+		$(SRC_DIR)redir_utils.c \
+		$(SRC_DIR)cmd_list.c \
+		$(SRC_DIR)redir_list.c \
+		$(ENV_DIR)env.c \
+		$(BUILTIN_DIR)builtin.c \
 
 all:
-	@gcc $(if $(DEBUG), -g -fsanitize=address) ./src/main.c ./src/utils.c ./src/env.c ./src/commands.c \
-		./src/redir_utils.c ./src/builtin.c ./lib/libft/libft.a -lreadline
+	@gcc $(SRC) $(LIBFT) -lreadline
 
 run:
-	@gcc ./src/main.c ./src/utils.c ./src/env.c ./src/commands.c \
-		./src/redir_utils.c ./src/builtin.c ./src/cmd_list.c ./src/redir_list.c \
-		./lib/libft/libft.a -lreadline \
-		&& ./a.out
+	@gcc $(CFLAGS) $(SRC) $(LIBFT) -lreadline && ./a.out
 
 clean:
 	@rm -rf a.out

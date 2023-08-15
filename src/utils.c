@@ -6,7 +6,7 @@
 /*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/07 14:31:38 by imisumi           #+#    #+#             */
-/*   Updated: 2023/08/15 12:26:15 by imisumi          ###   ########.fr       */
+/*   Updated: 2023/08/15 15:20:10 by imisumi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 
 
 
-uint32_t cmd_list_size(t_cmd_list *list)
+int	cmd_list_size(t_cmd_list *list)
 {
-	uint32_t size;
+	int size;
 
 	size = 0;
 	while (list)

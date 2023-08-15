@@ -6,7 +6,7 @@
 /*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:39:57 by imisumi-wsl       #+#    #+#             */
-/*   Updated: 2023/08/10 16:14:48 by imisumi          ###   ########.fr       */
+/*   Updated: 2023/08/15 16:18:42 by imisumi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,16 @@
 #include <stdbool.h>
 
 typedef struct s_list t_list;
+
+typedef enum s_exit_code
+{
+	SUCCESS = 0,
+	FAILURE = 1,
+	NOT_EXECUTABLE = 126,
+	NOT_FOUND = 127,
+	ARGUMENT_ERROR = 128,
+	CONTROL_C_TERMINATED = 130
+}	t_exit_code;
 
 typedef enum s_redir_type
 {
