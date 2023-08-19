@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/07 14:31:38 by imisumi           #+#    #+#             */
-/*   Updated: 2023/08/15 15:17:46 by imisumi          ###   ########.fr       */
+/*   Updated: 2023/08/20 00:58:17 by imisumi-wsl      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,39 +92,6 @@ void	builtin_export(t_data d)
 {
 	add_env(d, d.cmd_list->args[1]);
 }
-
-// void	builtin_cd(t_data d)
-// {
-// 	char	*cwd;
-// 	char	*temp;
-// 	int		check;
-// 	t_cmd_list *lst = d.cmd_list;
-// 	t_list *envp = d.env_lst;
-
-// 	check = 0;
-// 	cwd = getcwd(NULL, 0);
-// 	if (lst->args[1] == NULL)
-// 		check = chdir(get_env(lst_to_arr(envp), "HOME="));
-// 	else
-// 		check = chdir(lst->args[1]);
-// 	if (check == -1)
-// 		return ;
-// 	if (get_env(lst_to_arr(envp), "OLDPWD=") != NULL)
-// 	{
-// 		temp = ft_strjoin("OLDPWD=", cwd);
-// 		add_env(d, temp);
-// 		free(temp);
-// 	}
-// 	free(cwd);
-// 	if (get_env(lst_to_arr(envp), "PWD=") != NULL)
-// 	{
-// 		cwd = getcwd(NULL, 0);
-// 		temp = ft_strjoin("PWD=", cwd);
-// 		add_env(d, temp);
-// 		free(temp);
-// 		free(cwd);
-// 	}
-// }
 
 void	builtin_cd(t_data d)
 {

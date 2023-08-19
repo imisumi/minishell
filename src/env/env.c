@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/07 14:31:38 by imisumi           #+#    #+#             */
-/*   Updated: 2023/08/15 15:12:43 by imisumi          ###   ########.fr       */
+/*   Updated: 2023/08/20 01:04:58 by imisumi-wsl      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,4 +165,50 @@ char	*get_env(char **envp, char *path)
 		i++;
 	}
 	return (NULL);
+}
+
+char	**env_paths(char **envp)
+{
+	int		i;
+	char	*env;
+	char	*temp;
+	char	**paths;
+
+	// paths[0] = NULL;
+	env = get_env(envp, "PATH=");
+	// printf("%s\n", env);
+	if (env == NULL)
+		return (NULL);
+	paths = ft_split(env, ':');
+	i = 0;
+	while (paths[i])
+	{
+		temp = ft_strjoin(paths[i], "/");
+		free(paths[i]);
+		paths[i] = temp;
+		// printf("PATH: %s\n", paths[i]);
+		i++;
+	}
+	// exit(0);
+	return (paths);
+}
+
+char	**lst_to_arr(t_list *lst)
+{
+	int		i;
+	char	**envp;
+
+	i = ft_lstsize(lst);
+	envp = malloc(sizeof(char *) * (i + 1));
+	if (!envp)
+		exit(1);
+	i = 0;
+	while (lst)
+	{
+		envp[i] = lst->content;
+		i++;
+		lst = lst->next;
+	}
+	envp[i] = NULL;
+	return envp;
 }

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+         #
+#    By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/28 00:51:40 by ichiro            #+#    #+#              #
-#    Updated: 2023/08/15 15:36:15 by imisumi          ###   ########.fr        #
+#    Updated: 2023/08/19 15:26:58 by imisumi-wsl      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -93,6 +93,9 @@ all:
 
 run:
 	@gcc $(CFLAGS) $(SRC) $(LIBFT) -lreadline && ./a.out
+
+relib:
+	@$(MAKE) -C lib/libft re
 
 clean:
 	@rm -rf a.out

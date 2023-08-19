@@ -3,16 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/14 13:12:16 by imisumi           #+#    #+#             */
-/*   Updated: 2023/08/15 17:10:16 by imisumi          ###   ########.fr       */
+/*   Updated: 2023/08/20 01:27:15 by imisumi-wsl      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/pipe.h"
 
 t_exit_code exit_code;
+
+char	**env_paths(char **envp);
+void temp_cmd(t_cmd_list **lst, char *cmd, char **args);
+void temp_cmd_pipe(t_cmd_list **lst, char **arg1, char **arg2);
+void	init_env_lst(t_data *d, char **envp);
 
 void	free_2d_arr(char **array)
 {
@@ -27,50 +32,6 @@ void	free_2d_arr(char **array)
 	}
 	if (array)
 		free(array);
-}
-
-char	**env_paths(char **envp)
-{
-	int		i;
-	char	*env;
-	char	*temp;
-	char	**paths;
-
-	// paths[0] = NULL;
-	env = get_env(envp, "PATH=");
-	// printf("%s\n", env);
-	if (env == NULL)
-		return (NULL);
-	paths = ft_split(env, ':');
-	i = 0;
-	while (paths[i])
-	{
-		temp = ft_strjoin(paths[i], "/");
-		free(paths[i]);
-		paths[i] = temp;
-		// printf("PATH: %s\n", paths[i]);
-		i++;
-	}
-	// exit(0);
-	return (paths);
-}
-
-char	**lst_to_arr(t_list *lst)
-{
-	int		i;
-	char	**envp;
-
-	i = ft_lstsize(lst);
-	envp = malloc(sizeof(char *) * (i + 1));
-	i = 0;
-	while (lst)
-	{
-		envp[i] = lst->content;
-		i++;
-		lst = lst->next;
-	}
-	envp[i] = NULL;
-	return envp;
 }
 
 char	*find_path(char *cmd, char **paths)
@@ -109,49 +70,67 @@ void	exec_cmd(t_cmd_list *lst, t_list *env_lst)
 				exit (126);
 		}
 		execve(lst->cmd, lst->args, envp);
-		exit(127);
 	}
 	else
 	{
-		//? looping env paths
+		//! looping env paths
 		cmd = find_path(lst->cmd, paths);
-		// if (access(cmd, F_OK) == 0)
-		// {
-		// 	if (access(cmd, X_OK) != 0)
-		// 		exit (126);
-		// }
 		if (access(cmd, F_OK) == 0 && access(cmd, X_OK) != 0)
-				exit (126);
+			exit (126);
 		execve(cmd, lst->args, envp);
-		exit(127);
+		// printf("xxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
+	}
+	exit(127);
+}
+
+void	child_exit(int cmd_nums, pid_t *child_pids)
+{
+	int		i;
+	int		status;
+	int		exit_status;
+	pid_t	child;
+
+	i = 0;
+	while (i < cmd_nums) {
+		child = waitpid(child_pids[i], &status, 0);
+		
+		if (child == -1) {
+			perror("waitpid");
+			// return EXIT_FAILURE;
+		}
+		
+		if (WIFEXITED(status)) {
+			exit_status = WEXITSTATUS(status);
+			exit_code = exit_status;
+			exit_code = 127;
+			printf("Child process %d exited with status: %d\n", child, exit_status);
+		}
+		i++;
 	}
 }
 
+//! [0] = fd_in
+//! [1] = fd_out
+//! [2] = temp_in == STDIN_FILENO
+//! [3] = temp_out == STDOUT_FILENO
 void	pipex(t_data data)
 {
-	bool cmd = true;
+	bool		cmd;
+	int			cmd_nums;
+	int			i;
+	int			fd[4];
+	t_cmd_list	*temp;
+	pid_t		ret;
 
-	t_cmd_list *temp = data.cmd_list;
-
-	//! [0] = fd_in
-	//! [1] = fd_out
-	//! [2] = temp_in == STDIN_FILENO
-	//! [3] = temp_out == STDOUT_FILENO
-	int fd[4];
+	cmd = true;
+	temp = data.cmd_list;
 	fd[2] = dup(STDIN_FILENO);
 	fd[3] = dup(STDOUT_FILENO);
-
-	pid_t ret;
-	int i = 0;
-	int CMD_NUMS = cmd_list_size(data.cmd_list);
-
-	pid_t *child_pids = malloc(sizeof(pid_t) * CMD_NUMS);
-	if (CMD_NUMS == 1 && strcmp(temp->cmd, "exit") == 0)
-	{
-		printf("exiting\n");
+	i = 0;
+	cmd_nums = cmd_list_size(data.cmd_list);
+	if (cmd_nums == 1 && strcmp(temp->cmd, "exit") == 0)
 		exit(0);
-	}
-	// printf("%d\n", CMD_NUMS);
+	pid_t *child_pids = malloc(sizeof(pid_t) * cmd_nums);
 	while (temp)
 	{
 		cmd = check_redir_list(temp, fd);
@@ -165,6 +144,7 @@ void	pipex(t_data data)
 			}
 			else
 			{
+				printf("fork\n");
 				ret = fork();
 				if (ret == 0)
 					exec_cmd(temp, data.env_lst);
@@ -174,27 +154,22 @@ void	pipex(t_data data)
 		i++;
 	} // while loop
 
+	child_exit(cmd_nums, child_pids);
 	// int status;
-	// for (int i = 0; i < CMD_NUMS; i++)
-	// {
-	// 	wait(&status);
-	// }
-	
-	int status;
 
-	for (int i = 0; i < CMD_NUMS; i++) {
-		pid_t terminatedChildPid = waitpid(child_pids[i], &status, 0);
+	// for (int i = 0; i < cmd_nums; i++) {
+	// 	pid_t terminatedChildPid = waitpid(child_pids[i], &status, 0);
 		
-		if (terminatedChildPid == -1) {
-			perror("waitpid");
-			// return EXIT_FAILURE;
-		}
+	// 	if (terminatedChildPid == -1) {
+	// 		perror("waitpid");
+	// 		// return EXIT_FAILURE;
+	// 	}
 		
-		if (WIFEXITED(status)) {
-			int exitStatus = WEXITSTATUS(status);
-			printf("Child process %d exited with status: %d\n", terminatedChildPid, exitStatus);
-		}
-	}
+	// 	if (WIFEXITED(status)) {
+	// 		int exitStatus = WEXITSTATUS(status);
+	// 		printf("Child process %d exited with status: %d\n", terminatedChildPid, exitStatus);
+	// 	}
+	// }
 	free(child_pids);
 	dup2(fd[2], STDIN_FILENO);
 	dup2(fd[3], STDOUT_FILENO);
@@ -202,9 +177,6 @@ void	pipex(t_data data)
 	close(fd[3]);
 }
 
-void temp_cmd(t_cmd_list **lst, char *cmd, char **args);
-void temp_cmd_pipe(t_cmd_list **lst, char **arg1, char **arg2);
-void	init_env_lst(t_data *d, char **envp);
 
 t_utils	init_utils()
 {
@@ -249,7 +221,7 @@ int main(int argc, char *argv[], char *envp[])
 
 	while (is_running)
 	{
-		printf("%d\n\n", exit_code);
+		// printf("%d\n\n", exit_code);
 		print_handle();
 		char *line = readline(" ");
 
@@ -269,6 +241,7 @@ int main(int argc, char *argv[], char *envp[])
 			}
 			else
 			{
+				printf("no pipe\n");
 				args = ft_split(line, ' ');
 				if (args[0]) {
 					temp_cmd(&data.cmd_list, args[0], args);
@@ -278,6 +251,8 @@ int main(int argc, char *argv[], char *envp[])
 			free(line);
 		}
 		printf("\n");
-		// exit_code = EXIT_FAILURE;
+		// exit_code = EXIT_FAILURE
+		// exit_code = 127;
+		printf("exit code = %d\n\n", exit_code);
 	}
 }
