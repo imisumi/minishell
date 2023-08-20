@@ -6,7 +6,7 @@
 /*   By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/07 14:31:38 by imisumi           #+#    #+#             */
-/*   Updated: 2023/08/20 01:04:58 by imisumi-wsl      ###   ########.fr       */
+/*   Updated: 2023/08/20 19:46:48 by imisumi-wsl      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,14 +87,28 @@ void	add_env(t_data d, char *env)
 	fill_env_file(d);
 }
 
+bool	find_env(t_list *temp, t_list *prev, char *temp_env, t_data d)
+{
+	if (ft_strncmp((char *)temp->content, temp_env, ft_strlen(temp_env)) == 0)
+	{
+		printf("found env variable: %s\n", (char *)temp_env);
+		if (prev == NULL)
+			d.env_lst = temp->next;
+		else
+			prev->next = temp->next;
+		free(temp_env);
+		fill_env_file(d);
+		return (true);
+	}
+	return (false);
+}
+
 void	unset_env(t_data d, char *env)
 {
 	t_list	*temp;
 	t_list	*prev;
 	char	*temp_env;
-	t_list	**env_lst;
 
-	env_lst = &d.env_lst;
 	if (env[0] == '=')
 	{
 		printf("= is not a valid env variable\n");
@@ -102,21 +116,11 @@ void	unset_env(t_data d, char *env)
 	}
 	prev = NULL;
 	temp_env = ft_strjoin(env, "=");
-	temp = *env_lst;
+	temp = d.env_lst;
 	while (temp)
 	{
-		if (ft_strncmp((char *)temp->content, temp_env, \
-			ft_strlen(temp_env)) == 0)
-		{
-			printf("found env variable: %s\n", (char *)temp_env);
-			if (prev == NULL)
-				*env_lst = temp->next;
-			else
-				prev->next = temp->next;
-			free(temp_env);
-			fill_env_file(d);
+		if (find_env(temp, prev, temp_env, d))
 			return ;
-		}
 		prev = temp;
 		temp = temp->next;
 	}
@@ -174,22 +178,20 @@ char	**env_paths(char **envp)
 	char	*temp;
 	char	**paths;
 
-	// paths[0] = NULL;
 	env = get_env(envp, "PATH=");
-	// printf("%s\n", env);
 	if (env == NULL)
 		return (NULL);
 	paths = ft_split(env, ':');
+	if (!paths)
+		exit(1);
 	i = 0;
 	while (paths[i])
 	{
 		temp = ft_strjoin(paths[i], "/");
 		free(paths[i]);
 		paths[i] = temp;
-		// printf("PATH: %s\n", paths[i]);
 		i++;
 	}
-	// exit(0);
 	return (paths);
 }
 
@@ -210,5 +212,5 @@ char	**lst_to_arr(t_list *lst)
 		lst = lst->next;
 	}
 	envp[i] = NULL;
-	return envp;
+	return (envp);
 }

@@ -54,6 +54,13 @@
 # define COL7 "\033[36;1m"
 # define COL8 "\033[37;1m"
 
+char	**env_paths(char **envp);
+void	temp_cmd(t_cmd_list **lst, char *cmd, char **args);
+void	temp_cmd_pipe(t_cmd_list **lst, char **arg1, char **arg2);
+void	init_env_lst(t_data *d, char **envp);
+
+
+
 int cmd_list_size(t_cmd_list *list);
 
 t_cmd_list *create_cmd_list(char *cmd, char **args);

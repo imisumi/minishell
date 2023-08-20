@@ -3,21 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ichiro <ichiro@student.42.fr>              +#+  +:+       +#+        */
+/*   By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/14 13:12:16 by imisumi           #+#    #+#             */
-/*   Updated: 2023/08/20 14:58:32 by ichiro           ###   ########.fr       */
+/*   Updated: 2023/08/20 19:57:20 by imisumi-wsl      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/pipe.h"
 
-t_exit_code exit_code;
-
-char	**env_paths(char **envp);
-void temp_cmd(t_cmd_list **lst, char *cmd, char **args);
-void temp_cmd_pipe(t_cmd_list **lst, char **arg1, char **arg2);
-void	init_env_lst(t_data *d, char **envp);
+t_exit_code	g_exit_code;
 
 void	free_2d_arr(char **array)
 {
@@ -78,7 +73,6 @@ void	exec_cmd(t_cmd_list *lst, t_list *env_lst)
 		if (access(cmd, F_OK) == 0 && access(cmd, X_OK) != 0)
 			exit (126);
 		execve(cmd, lst->args, envp);
-		// printf("xxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
 	}
 	exit(127);
 }
@@ -91,18 +85,18 @@ void	child_exit(int cmd_nums, pid_t *child_pids)
 	pid_t	child;
 
 	i = 0;
-	while (i < cmd_nums) {
+	while (i < cmd_nums)
+	{
 		child = waitpid(child_pids[i], &status, 0);
-		
-		if (child == -1) {
-			perror("waitpid");
+		// if (child == -1) {
+			// perror("waitpid");
 			// return EXIT_FAILURE;
-		}
-		
-		if (WIFEXITED(status)) {
+		// }
+		if (WIFEXITED(status))
+		{
 			exit_status = WEXITSTATUS(status);
-			exit_code = exit_status;
-			printf("Child process %d exited with status: %d\n", child, exit_status);
+			g_exit_code = exit_status;
+			// printf("Child process %d exited with status: %d\n", child, exit_status);
 		}
 		i++;
 	}
@@ -144,7 +138,7 @@ void	pipex(t_data data)
 			}
 			else
 			{
-				printf("fork\n");
+				// printf("fork\n");
 				ret = fork();
 				if (ret == 0)
 					exec_cmd(temp, data.env_lst);
@@ -171,16 +165,16 @@ t_utils	init_utils()
 	temp = getcwd(NULL, 0);
 	utils.local_dir = ft_strjoin(temp, "/.env.ms");
 	free(temp);
-	return utils;
+	return (utils);
 }
 
 void	print_handle(void)
 {
-	char *start;
-	char *end;
-	char *temp;
-	char *dir;
-	char *ms;
+	char	*start;
+	char	*end;
+	char	*temp;
+	char	*dir;
+	char	*ms;
 
 	start = "\033[31;1mMS \033[1;38;5;206m➜ \033[1;36m";
 	end = "\033[1;34m$\033[0m";
@@ -196,7 +190,6 @@ void	print_handle(void)
 
 int main(int argc, char *argv[], char *envp[])
 {
-	// printf("%d\n\n", exit_code);
 	t_data data;
 	bool is_running = true;
 	data.env_lst = NULL;
@@ -206,7 +199,6 @@ int main(int argc, char *argv[], char *envp[])
 
 	while (is_running)
 	{
-		// printf("%d\n\n", exit_code);
 		print_handle();
 		char *line = readline(" ");
 
@@ -226,7 +218,7 @@ int main(int argc, char *argv[], char *envp[])
 			}
 			else
 			{
-				printf("no pipe\n");
+				// printf("no pipe\n");
 				args = ft_split(line, ' ');
 				if (args[0]) {
 					temp_cmd(&data.cmd_list, args[0], args);
@@ -236,8 +228,6 @@ int main(int argc, char *argv[], char *envp[])
 			free(line);
 		}
 		printf("\n");
-		// exit_code = EXIT_FAILURE
-		// exit_code = 127;
-		printf("exit code = %d\n\n", exit_code);
+		printf("exit code = %d\n\n", g_exit_code);
 	}
 }
