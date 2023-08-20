@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+        */
+/*   By: ichiro <ichiro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/14 13:12:16 by imisumi           #+#    #+#             */
-/*   Updated: 2023/08/20 01:34:42 by imisumi-wsl      ###   ########.fr       */
+/*   Updated: 2023/08/20 14:58:32 by ichiro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,10 @@ void	pipex(t_data data)
 		if (cmd == true)
 		{
 			if (check_builtin(temp->cmd) == true)
-				run_builtin(data);
+			{
+				// printf("builtin\n");
+				run_builtin(data, temp);
+			}
 			else
 			{
 				printf("fork\n");

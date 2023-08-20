@@ -97,7 +97,7 @@ void add_append_output_node(t_cmd_list **lst, char *file);
 
 bool	check_builtin(char *cmd);
 // void	run_builtin(t_cmd_list *lst, t_list *env_lst);
-void	run_builtin(t_data d);
+void	run_builtin(t_data d, t_cmd_list *lst);
 
 
 //! env

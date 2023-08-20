@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+        */
+/*   By: ichiro <ichiro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/07 14:31:38 by imisumi           #+#    #+#             */
-/*   Updated: 2023/08/20 00:58:17 by imisumi-wsl      ###   ########.fr       */
+/*   Updated: 2023/08/20 15:30:01 by ichiro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,18 +82,49 @@ void	builtin_echo(t_cmd_list *lst)
 	}
 }
 
-void	builtin_unset(t_data d)
+void	builtin_unset(t_data d, char *env)
 {
-	unset_env(d, d.cmd_list->args[1]);
+	unset_env(d, env);
 }
 
 
-void	builtin_export(t_data d)
+void	builtin_export(t_data d, char *env)
 {
-	add_env(d, d.cmd_list->args[1]);
+	add_env(d, env);
 }
 
-void	builtin_cd(t_data d)
+// void	builtin_cd(t_data d)
+// {
+// 	char	*cwd;
+// 	char	*temp;
+// 	int		check;
+
+// 	check = 0;
+// 	cwd = getcwd(NULL, 0);
+// 	if (d.cmd_list->args[1] == NULL)
+// 		check = chdir(get_env(lst_to_arr(d.env_lst), "HOME="));
+// 	else
+// 		check = chdir(d.cmd_list->args[1]);
+// 	if (check == -1)
+// 		return ;
+// 	if (get_env(lst_to_arr(d.env_lst), "OLDPWD=") != NULL)
+// 	{
+// 		temp = ft_strjoin("OLDPWD=", cwd);
+// 		add_env(d, temp);
+// 		free(temp);
+// 	}
+// 	free(cwd);
+// 	if (get_env(lst_to_arr(d.env_lst), "PWD=") != NULL)
+// 	{
+// 		cwd = getcwd(NULL, 0);
+// 		temp = ft_strjoin("PWD=", cwd);
+// 		add_env(d, temp);
+// 		free(temp);
+// 		free(cwd);
+// 	}
+// }
+
+void	builtin_cd(t_data d, t_cmd_list *lst)
 {
 	char	*cwd;
 	char	*temp;
@@ -101,10 +132,10 @@ void	builtin_cd(t_data d)
 
 	check = 0;
 	cwd = getcwd(NULL, 0);
-	if (d.cmd_list->args[1] == NULL)
+	if (lst->args[1] == NULL)
 		check = chdir(get_env(lst_to_arr(d.env_lst), "HOME="));
 	else
-		check = chdir(d.cmd_list->args[1]);
+		check = chdir(lst->args[1]);
 	if (check == -1)
 		return ;
 	if (get_env(lst_to_arr(d.env_lst), "OLDPWD=") != NULL)
@@ -124,25 +155,26 @@ void	builtin_cd(t_data d)
 	}
 }
 
-void run_builtin(t_data d)
+void run_builtin(t_data d, t_cmd_list *lst)
 {
+	printf("check\n");
 	char	*cwd;
-	if (strcmp(d.cmd_list->cmd, "pwd") == 0)
+	if (strcmp(lst->cmd, "pwd") == 0)
 	{
 		cwd = getcwd(NULL, 0);
 		printf("%s\n", cwd);
 		free(cwd);
 	}
-	if (strcmp(d.cmd_list->cmd, "echo") == 0)
-		builtin_echo(d.cmd_list);
-	if (strcmp(d.cmd_list->cmd, "env") == 0)
+	if (strcmp(lst->cmd, "echo") == 0)
+		builtin_echo(lst);
+	if (strcmp(lst->cmd, "env") == 0)
 		print_env_lst(d.env_lst);
-	if (strcmp(d.cmd_list->cmd, "unset") == 0)
-		builtin_unset(d);
-	if (strcmp(d.cmd_list->cmd, "export") == 0)
-		builtin_export(d);
-	if (strcmp(d.cmd_list->cmd, "cd") == 0)
-		builtin_cd(d);
+	if (strcmp(lst->cmd, "unset") == 0 && lst->next == NULL)
+		builtin_unset(d, lst->args[1]);
+	if (strcmp(lst->cmd, "export") == 0 && lst->next == NULL)
+		builtin_export(d, lst->args[1]);
+	if (strcmp(lst->cmd, "cd") == 0 && lst->next == NULL)
+		builtin_cd(d, lst);
 	// if (strcmp(d.cmd_list->cmd, "exit") == 0)
 	// 	exit(0);
 }
