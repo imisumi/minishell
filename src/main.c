@@ -6,7 +6,7 @@
 /*   By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/14 13:12:16 by imisumi           #+#    #+#             */
-/*   Updated: 2023/08/20 01:27:15 by imisumi-wsl      ###   ########.fr       */
+/*   Updated: 2023/08/20 01:34:42 by imisumi-wsl      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,6 @@ void	child_exit(int cmd_nums, pid_t *child_pids)
 		if (WIFEXITED(status)) {
 			exit_status = WEXITSTATUS(status);
 			exit_code = exit_status;
-			exit_code = 127;
 			printf("Child process %d exited with status: %d\n", child, exit_status);
 		}
 		i++;
@@ -139,9 +138,7 @@ void	pipex(t_data data)
 		if (cmd == true)
 		{
 			if (check_builtin(temp->cmd) == true)
-			{
 				run_builtin(data);
-			}
 			else
 			{
 				printf("fork\n");
@@ -155,21 +152,6 @@ void	pipex(t_data data)
 	} // while loop
 
 	child_exit(cmd_nums, child_pids);
-	// int status;
-
-	// for (int i = 0; i < cmd_nums; i++) {
-	// 	pid_t terminatedChildPid = waitpid(child_pids[i], &status, 0);
-		
-	// 	if (terminatedChildPid == -1) {
-	// 		perror("waitpid");
-	// 		// return EXIT_FAILURE;
-	// 	}
-		
-	// 	if (WIFEXITED(status)) {
-	// 		int exitStatus = WEXITSTATUS(status);
-	// 		printf("Child process %d exited with status: %d\n", terminatedChildPid, exitStatus);
-	// 	}
-	// }
 	free(child_pids);
 	dup2(fd[2], STDIN_FILENO);
 	dup2(fd[3], STDOUT_FILENO);
