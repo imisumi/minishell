@@ -6,179 +6,20 @@
 /*   By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/07 14:31:38 by imisumi           #+#    #+#             */
-/*   Updated: 2023/08/20 19:46:48 by imisumi-wsl      ###   ########.fr       */
+/*   Updated: 2023/10/19 15:08:10 by imisumi-wsl      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/pipe.h"
+#include "pipe.h"
 
-void	fill_env_file(t_data d)
-{
-	t_list	*temp;
-	char	*temp_env;
-	ssize_t	bytes_written;
-	int		fd;
-
-	fd = open(d.utils.local_dir, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	if (fd == -1)
-	{
-		printf("error opening file\n");
-		exit(1);
-	}
-	temp = d.env_lst;
-	while (temp)
-	{
-		temp_env = (char *)temp->content;
-		bytes_written = write(fd, temp_env, ft_strlen(temp_env));
-		if (bytes_written == -1)
-		{
-			printf("error writing to file\n");
-			exit(1);
-		}
-		bytes_written = write(fd, "\n", 1);
-		if (bytes_written == -1)
-		{
-			printf("error writing to file\n");
-			exit(1);
-		}
-		temp = temp->next;
-	}
-	close(fd);
-}
-
-void	print_env_lst(t_list *env_lst)
-{
-	while (env_lst)
-	{
-		printf("%s\n", (char *)env_lst->content);
-		env_lst = env_lst->next;
-	}
-}
-
-void	check_existing_env(t_data d, char *env)
-{
-	int		i;
-	char	*str;
-
-	i = 0;
-	while (env[i] != '=')
-		i++;
-	str = ft_substr(env, 0, i);
-	if (!str)
-		exit(1);
-	unset_env(d, str);
-	free(str);
-}
-
-void	add_env(t_data d, char *env)
-{
-	char	*temp;
-	t_list	*new;
-
-	if (ft_strchr(env, '=') == NULL || env[0] == '=')
-	{
-		printf("invalid env variable: %s\n", env);
-		return ;
-	}
-	check_existing_env(d, env);
-	temp = strdup(env);
-	new = ft_lstnew(temp);
-	ft_lstadd_back(&d.env_lst, new);
-	fill_env_file(d);
-}
-
-bool	find_env(t_list *temp, t_list *prev, char *temp_env, t_data d)
-{
-	if (ft_strncmp((char *)temp->content, temp_env, ft_strlen(temp_env)) == 0)
-	{
-		printf("found env variable: %s\n", (char *)temp_env);
-		if (prev == NULL)
-			d.env_lst = temp->next;
-		else
-			prev->next = temp->next;
-		free(temp_env);
-		fill_env_file(d);
-		return (true);
-	}
-	return (false);
-}
-
-void	unset_env(t_data d, char *env)
-{
-	t_list	*temp;
-	t_list	*prev;
-	char	*temp_env;
-
-	if (env[0] == '=')
-	{
-		printf("= is not a valid env variable\n");
-		return ;
-	}
-	prev = NULL;
-	temp_env = ft_strjoin(env, "=");
-	temp = d.env_lst;
-	while (temp)
-	{
-		if (find_env(temp, prev, temp_env, d))
-			return ;
-		prev = temp;
-		temp = temp->next;
-	}
-	free(temp_env);
-	fill_env_file(d);
-}
-
-void	init_env_lst(t_data *d, char **envp)
-{
-	t_list	*env_lst;
-	t_list	*temp;
-	char	*temp_env;
-	int		i;
-
-	i = 0;
-	env_lst = NULL;
-	while (envp[i])
-	{
-		temp_env = ft_strdup(envp[i]);
-		if (!temp_env)
-			exit(1);
-		temp = ft_lstnew(temp_env);
-		if (!temp)
-			exit(1);
-		ft_lstadd_back(&env_lst, temp);
-		i++;
-	}
-	d->env_lst = env_lst;
-	fill_env_file(*d);
-}
-
-char	*get_env(char **envp, char *path)
-{
-	int		i;
-	char	*env;
-
-	i = 0;
-	while (envp[i])
-	{
-		env = ft_strnstr(envp[i], path, ft_strlen(path));
-		if (env != NULL)
-		{
-			env = env + ft_strlen(path);
-			return (env);
-		}
-		i++;
-	}
-	return (NULL);
-}
-
-char	**env_paths(char **envp)
+char	**env_paths(t_list *envp)
 {
 	int		i;
 	char	*env;
 	char	*temp;
 	char	**paths;
 
-	env = get_env(envp, "PATH=");
+	env = get_env_var_value(envp, "PATH");
 	if (env == NULL)
 		return (NULL);
 	paths = ft_split(env, ':');
@@ -195,21 +36,84 @@ char	**env_paths(char **envp)
 	return (paths);
 }
 
-char	**lst_to_arr(t_list *lst)
+int	print_env_lst(t_list *env_lst)
 {
-	int		i;
-	char	**envp;
+	t_env	*env;
 
-	i = ft_lstsize(lst);
-	envp = malloc(sizeof(char *) * (i + 1));
-	if (!envp)
-		exit(1);
-	i = 0;
-	while (lst)
+	while (env_lst)
 	{
-		envp[i] = lst->content;
+		env = (t_env *)env_lst->content;
+		if (env->value != NULL)
+		{
+			ft_putstr_fd(env->name, STDOUT_FILENO);
+			write(STDOUT_FILENO, "=", 1);
+			ft_putstr_fd(env->value, STDOUT_FILENO);
+			write(STDOUT_FILENO, "\n", 1);
+		}
+		env_lst = env_lst->next;
+	}
+	return (0);
+}
+
+static void	print_env_value(t_env *env)
+{
+	int	i;
+
+	i = 0;
+	ft_putstr_fd("\"", STDOUT_FILENO);
+	while (env->value[i])
+	{
+		if (env->value[i] == '\"' || env->value[i] == '$' \
+				|| env->value[i] == '\\')
+			write(STDOUT_FILENO, "\\", 1);
+		write(STDOUT_FILENO, &env->value[i], 1);
 		i++;
-		lst = lst->next;
+	}
+	ft_putstr_fd("\"\n", STDOUT_FILENO);
+}
+
+void	print_export_lst(t_list *env_lst)
+{
+	t_env	*env;
+
+	while (env_lst)
+	{
+		env = (t_env *)env_lst->content;
+		ft_putstr_fd("declare -x ", STDOUT_FILENO);
+		ft_putstr_fd(env->name, STDOUT_FILENO);
+		if (env->value != NULL)
+			write(STDOUT_FILENO, "=", 1);
+		if (env->value != NULL)
+			print_env_value(env);
+		else
+			write(STDOUT_FILENO, "\n", 1);
+		env_lst = env_lst->next;
+	}
+}
+
+char	**env_list_to_array(t_list *env_list)
+{
+	char	**envp;
+	t_env	*env;
+	char	*temp;
+	int		i;
+
+	envp = malloc(sizeof(char *) * (ft_lstsize(env_list) + 1));
+	if (envp == NULL)
+		return (NULL);
+	i = 0;
+	while (env_list)
+	{
+		env = (t_env *)env_list->content;
+		envp[i] = ft_strjoin(env->name, "=");
+		if (env->value)
+		{
+			temp = ft_strjoin(envp[i], env->value);
+			free(envp[i]);
+			envp[i] = temp;
+		}
+		i++;
+		env_list = env_list->next;
 	}
 	envp[i] = NULL;
 	return (envp);

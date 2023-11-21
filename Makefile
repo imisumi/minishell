@@ -1,103 +1,156 @@
 # **************************************************************************** #
 #                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/01/28 00:51:40 by ichiro            #+#    #+#              #
-#    Updated: 2023/08/19 15:26:58 by imisumi-wsl      ###   ########.fr        #
+#                                                         ::::::::             #
+#    Makefile                                           :+:    :+:             #
+#                                                      +:+                     #
+#    By: imisumi <imisumi@student.42.fr>              +#+                      #
+#                                                    +#+                       #
+#    Created: 2023/06/28 14:49:09 by rhorbach      #+#    #+#                  #
+#    Updated: 2023/11/16 16:32:41 by rhorbach      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
-# NAME = minishell
+NAME = minishell
 
-# CFLAGS = -g -Iinclude
-# LFLAGS = -lreadline
+HEADERDIR = includes
+OBJDIR = .obj
 
-# OBJ_DIR = .obj
-
-# SRC_DIR = srcs
-
-# LIBFT = lib/libft/libft.a
-
-# cc = gcc
-
-# SRC = ./srcs/main.c
-
-# OBJ = $(addprefix $(OBJ_DIR)/,$(SRC:.c=.o))
-
-# GREEN := \033[1;32m
-# RED := \033[1;31m
-# BLUE := \033[1;34m
-# PINK := \033[1;38;5;206m
-# NC := \033[0m
+CFLAGS = -Wall -Wextra -Werror
+CFLAGS += $(if $(DEBUG),-g) $(if $(NORL),-DNO_READLINE=1)
+ifdef $(SAN)
+CFLAGS += -fsanitize=address,undefined
+endif
+INCLUDES += -I $(HEADERDIR)
+CFLAGS += -Wfatal-errors
 
 
-# $(NAME): $(LIBFT) $(OBJ)
-# 	@$(cc) $(CFLAGS) $(INC) -o $(NAME) $^ $(LFLAGS)
+GREEN := \033[1;32m
+RED := \033[1;31m
+BLUE := \033[1;34m
+PINK := \033[1;38;5;206m
+NC := \033[0m
 
-# $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-# 	@mkdir -p $(OBJ_DIR)
-# 	@$(cc) $(CFLAGS) $(LIBFT) $(INC) -c $< -o $@
-
-# # Uncomment the following lines if you need to build the libft library
-# # $(NAME): $(LIBFT)
-# # 	@$(cc) $(CFLAGS) $(INC) -o $(NAME) $^ $(LFLAGS)
-# #
-# $(LIBFT):
-# 	@$(MAKE) -C lib/libft
-
-# all: $(NAME)
-# 	@echo "$(GREEN)[Completed]$(NC)"
-
-# run: all
-# 	@./$(NAME)
-
-# clean:
-# 	@rm -rf $(OBJ_DIR)
-
-# fclean: clean
-# 	@rm -f $(NAME)
-	
-# relib:
-# 	@$(MAKE) -C lib/libft re
-
-# re: fclean all
+#########################
 
 
-# NAME = minishell
+FILES = \
+	src/signals.c								\
+	src/signals2.c								\
+	src/exit_code.c								\
+	src/main.c									\
+	src/error.c									\
+	src/free.c									\
+	src/free2.c									\
+												\
+	src/cmd_lst/cmd_lstadd_back.c				\
+	src/cmd_lst/cmd_lstadd_front.c				\
+	src/cmd_lst/cmd_lstclear.c					\
+	src/cmd_lst/cmd_lstdelone.c					\
+	src/cmd_lst/cmd_lstlast.c					\
+	src/cmd_lst/cmd_lstnew.c					\
+	src/cmd_lst/cmd_lstnew_back.c				\
+	src/cmd_lst/cmd_lstnew_front.c				\
+	src/cmd_lst/cmd_lstsize.c					\
+												\
+	src/env/env.c								\
+	src/env/env_get.c							\
+	src/env/env_init.c							\
+	src/env/env_set.c							\
+												\
+	src/redir/redirect_lst/redir_lstadd_back.c	\
+	src/redir/redirect_lst/redir_lstadd_front.c	\
+	src/redir/redirect_lst/redir_lstclear.c		\
+	src/redir/redirect_lst/redir_lstdelone.c	\
+	src/redir/redirect_lst/redir_lstlast.c		\
+	src/redir/redirect_lst/redir_lstnew.c		\
+	src/redir/redirect_lst/redir_lstnew_back.c	\
+	src/redir/redirect_lst/redir_lstnew_front.c	\
+												\
+	src/redir/redir_error.c						\
+	src/redir/redir_utils.c						\
+												\
+	src/heredoc/here_doc.c						\
+	src/heredoc/here_doc_utils.c				\
+	src/heredoc/here_doc_expand.c				\
+												\
+	src/tokens/all_whitepace.c					\
+	src/tokens/ambiguous_redirect.c				\
+	src/tokens/clear_whitespace_tokens.c		\
+	src/tokens/complete_tokens.c				\
+	src/tokens/expand_token_variable.c			\
+	src/tokens/expand_tokens.c					\
+	src/tokens/join_word_tokens.c				\
+	src/tokens/parser_fill_cmd.c				\
+	src/tokens/parser.c							\
+	src/tokens/split_tokens.c					\
+	src/tokens/tokenize.c						\
+	src/tokens/validate_tokens.c				\
+	src/tokens/add_token/double_quoted_token.c 	\
+	src/tokens/add_token/pipe_token.c 			\
+	src/tokens/add_token/redirect_token.c 		\
+	src/tokens/add_token/single_quoted_token.c 	\
+	src/tokens/add_token/space_token.c			\
+	src/tokens/add_token/word_token.c			\
+												\
+	src/builtins/builtins.c						\
+	src/builtins/builtins_1.c					\
+	src/builtins/builtins_2.c					\
+	src/builtins/builtins_3.c					\
+	src/utils.c									\
+	src/utils2.c								\
+	src/exec/pipex.c 							\
+	src/exec/pipex2.c 							\
+												\
 
-# all:
-# 	@gcc ./srcs/main.c ./lib/libft/libft.a && ./a.out
+#########################
 
-# CFLAGS = -Wall -Werror -Wextra
+OBJFILES = $(addprefix $(OBJDIR)/,$(FILES:c=o))
+INCLUDES += $(addprefix -I,$(sort $(dir $(HEADERS))))
 
-LIBFT = lib/libft/libft.a
+#########################
 
-ENV_DIR = ./src/env/
-SRC_DIR = ./src/
-BUILTIN_DIR = ./src/builtins/
+LIBFT = ./libft/libft.a
+INCLUDES += -I $(dir $(LIBFT)) -I$(READLINE_DIR)/include # -I makes it so that when a file is included without specifying the header's path it will be searched for in this folder
+LFLAGS = -L $(dir $(LIBFT)) -lft
+LFLAGS += -L$(READLINE_DIR)/lib -lreadline
 
-SRC =	$(SRC_DIR)main.c \
-		$(SRC_DIR)utils.c \
-		$(SRC_DIR)commands.c \
-		$(SRC_DIR)redir_utils.c \
-		$(SRC_DIR)cmd_list.c \
-		$(SRC_DIR)redir_list.c \
-		$(ENV_DIR)env.c \
-		$(BUILTIN_DIR)builtin.c \
+#########################
 
-all:
-	@gcc $(SRC) $(LIBFT) -lreadline
+all: $(NAME)
+	@echo "$(GREEN)[Completed $(NAME)]$(NC)"
 
-run:
-	@gcc $(CFLAGS) $(SRC) $(LIBFT) -lreadline && ./a.out
+$(NAME): $(LIBFT) $(OBJFILES)
+	@$(CC) $(CFLAGS) $(INCLUDES) $(OBJFILES) $(LFLAGS) -o $(NAME)
 
-relib:
-	@$(MAKE) -C lib/libft re
+$(LIBFT):
+	@git submodule update --init --recursive $(dir $(LIBFT))
+	@$(MAKE) -C $(dir $(LIBFT))
+
+DEPENDS := $(patsubst %.o,%.d,$(OBJFILES))
+-include $(DEPENDS)
+
+$(OBJDIR)/%.o: %.c
+	@mkdir -p $(dir $@)
+	@echo "$(BLUE)[Compiling $<]$(NC)"
+	@$(CC) $(CFLAGS) $(INCLUDES) -MMD -MP -c $< -o $@
+	@printf "\033[1A\033[K"
+
+run: all
+	./minishell
 
 clean:
-	@rm -rf a.out
+	@rm -rf $(OBJDIR)
+	@echo "$(RED)[Deleted $(NAME) objects]$(NC)"
 
+fclean: clean
+	@rm -f $(NAME)
+	@echo "$(RED)[Deleted $(NAME)]$(NC)"
 
+re: fclean all
+
+relib:
+	@$(MAKE) -C libft re
+
+#########################
+
+.PHONY: all run clean fclean re relib

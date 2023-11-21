@@ -3,104 +3,89 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+        */
+/*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/07 14:31:38 by imisumi           #+#    #+#             */
-/*   Updated: 2023/08/20 19:46:01 by imisumi-wsl      ###   ########.fr       */
+/*   Created: 2023/06/28 13:36:34 by rhorbach          #+#    #+#             */
+/*   Updated: 2023/11/16 14:26:09 by imisumi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/pipe.h"
+#include "pipe.h"
 
-int	cmd_list_size(t_cmd_list *list)
+char	*find_path(char *cmd, char **paths)
 {
-	int	size;
+	int		i;
+	char	*temp;
 
-	size = 0;
-	while (list)
-	{
-		size++;
-		list = list->next;
-	}
-	return (size);
-}
-
-t_cmd_list	*create_cmd_list(char *cmd, char **args)
-{
-	int			i;
-	t_cmd_list	*cmd_list;
-
-	cmd_list = calloc(sizeof(t_cmd_list), 1);
-	cmd_list->cmd = ft_strdup(cmd);
-	cmd_list->args = calloc(sizeof(char *), 10);
 	i = 0;
-	while (args[i])
+	if (paths == NULL)
+		return (cmd);
+	while (paths[i])
 	{
-		cmd_list->args[i] = ft_strdup(args[i]);
+		temp = ft_strjoin(paths[i], cmd);
+		free(paths[i]);
+		paths[i] = temp;
+		if (access(paths[i], F_OK | X_OK) == 0)
+			return (paths[i]);
 		i++;
 	}
-	cmd_list->next = NULL;
-	cmd_list->redir = NULL;
-	return (cmd_list);
+	return (cmd);
 }
 
-void	cmd_list_add_back(t_cmd_list **list, t_cmd_list *new)
+int	fd_put_err(char *input, char *msg, int ret)
 {
-	t_cmd_list	*temp;
-
-	temp = *list;
-	while (temp->next)
-		temp = temp->next;
-	temp->next = new;
+	if (!TESTING)
+		ft_putstr_fd("\033[32;1m", STDERR_FILENO);
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	if (input)
+		ft_putstr_fd(input, STDERR_FILENO);
+	if (msg)
+		ft_putstr_fd(msg, STDERR_FILENO);
+	if (!TESTING)
+		ft_putstr_fd(RESET, STDERR_FILENO);
+	return (ret);
 }
 
-void	print_args(t_cmd_list *lst)
+char	*get_prompt(void)
 {
-	int			i;
-	t_cmd_list	*temp;
+	char	*temp;
+	char	*dir;
+	char	*ms;
 
-	temp = lst;
-	while (temp)
+	if (!USE_ASCII_COLOR)
+		return (ft_strdup("minishell "));
+	dir = getcwd(NULL, 0);
+	if (get_exit_code() == 0)
+		temp = ft_strjoin(PROMPT_SUCCESS, ft_strrchr(dir, '/') + 1);
+	else
+		temp = ft_strjoin(PROMPT_FAILURE, ft_strrchr(dir, '/') + 1);
+	ms = ft_strjoin(temp, PROMPT_END);
+	free(dir);
+	free(temp);
+	return (ms);
+}
+
+t_utils	init_utils(void)
+{
+	t_utils	utils;
+	char	*temp;
+
+	temp = getcwd(NULL, 0);
+	utils.local_dir = ft_strjoin(temp, "/.env.ms");
+	free(temp);
+	return (utils);
+}
+
+t_error	set_old_pwd(t_data *data)
+{
+	char	*cwd;
+
+	cwd = getcwd(NULL, 0);
+	if (set_env_var(&data->env_lst, "OLDPWD", cwd) != OK)
 	{
-		printf("%s\n", temp->cmd);
-		i = 0;
-		while (temp->args[i])
-		{
-			printf("%s ", temp->args[i]);
-			i++;
-		}
-		temp = temp->next;
-		printf("\n");
+		free(cwd);
+		return (get_error());
 	}
-	printf("\n");
-}
-
-void	add_input_node(t_cmd_list **lst, char *file)
-{
-	t_redir	*new;
-
-	new = redir_new_node();
-	new->file = ft_strdup(file);
-	new->type = REDIR_INPUT;
-	redir_add_back(lst, new);
-}
-
-void	add_output_node(t_cmd_list **lst, char *file)
-{
-	t_redir	*new;
-
-	new = redir_new_node();
-	new->file = ft_strdup(file);
-	new->type = REDIR_OUTPUT;
-	redir_add_back(lst, new);
-}
-
-void	add_append_output_node(t_cmd_list **lst, char *file)
-{
-	t_redir	*new;
-
-	new = redir_new_node();
-	new->file = ft_strdup(file);
-	new->type = REDIR_OUTPUT_APPEND;
-	redir_add_back(lst, new);
+	free(cwd);
+	return (OK);
 }

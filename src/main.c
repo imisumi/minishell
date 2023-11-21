@@ -3,231 +3,234 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: imisumi-wsl <imisumi-wsl@student.42.fr>    +#+  +:+       +#+        */
+/*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/14 13:12:16 by imisumi           #+#    #+#             */
-/*   Updated: 2023/08/20 19:57:20 by imisumi-wsl      ###   ########.fr       */
+/*   Created: 2023/10/02 15:11:45 by rhorbach          #+#    #+#             */
+/*   Updated: 2023/11/21 16:23:08 by imisumi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/pipe.h"
+#include <errno.h>
+#include <stdlib.h>
+#include "libft.h"
+#include "env.h"
+#include "types.h"
+#include "pipe.h"
+#include "error.h"
+#include "tokens.h"
+#include "cmd_lst.h"
+#include "redir_lst.h"
+#include <readline/readline.h>
+#include <readline/history.h>
 
-t_exit_code	g_exit_code;
-
-void	free_2d_arr(char **array)
+//TODO: maybe incorporate pipex, cuz issue when all whitespace
+t_error	parse_input(t_data *data, char *input)
 {
-	int	i;
+	t_list	*tokens;
 
-	i = 0;
-	while (array[i])
+	tokens = NULL;
+	if (tokenize(&tokens, input) != OK)
 	{
-		if (array[i])
-			free(array[i]);
-		i++;
+		ft_lstclear(&tokens, &free_token);
+		return (get_error());
 	}
-	if (array)
-		free(array);
+	if (all_whitepace(tokens))
+	{
+		ft_lstclear(&tokens, &free_token);
+		return (OK);
+	}
+	if (complete_tokens(&tokens, data->env_lst) != OK \
+		|| cmd_parser(data, tokens) != OK)
+	{
+		ft_lstclear(&tokens, &free_token);
+		return (get_error());
+	}
+	ft_lstclear(&tokens, &free_token);
+	return (OK);
 }
 
-char	*find_path(char *cmd, char **paths)
+t_error	handle_input(t_data *data, char *input)
 {
-	int		i;
-	char	*temp;
-
-	i = 0;
-	if (paths == NULL)
-		return (cmd);
-	while (paths[i])
+	if (input[0] != '\0')
 	{
-		temp = ft_strjoin(paths[i], cmd);
-		free(paths[i]);
-		paths[i] = temp;
-		if (access(paths[i], F_OK | X_OK) == 0)
-			return (paths[i]);
-		i++;
-	}
-	return (cmd);
-}
-
-void	exec_cmd(t_cmd_list *lst, t_list *env_lst)
-{
-	char	**envp;
-	char	**paths;
-	char	*cmd;
-
-	envp = lst_to_arr(env_lst);
-	paths = env_paths(envp);
-	if (ft_strchr(lst->cmd, '/') != NULL)
-	{
-		if (access(lst->cmd, F_OK) == 0)
+		if (parse_input(data, input) != OK)
 		{
-			if (access(lst->cmd, X_OK) != 0)
-				exit (126);
+			free(input);
+			print_error(get_error());
+			set_exit_code(2);
+			if (get_error() == E_AMBIGUOUS_REDIRECT)
+				set_exit_code(1);
 		}
-		execve(lst->cmd, lst->args, envp);
+		else
+		{
+			free(input);
+			if (pipex(data) != OK)
+				return (get_error());
+			free_cmd_lst(data->cmd_list);
+		}
+	}
+	return (OK);
+}
+
+// t_error	minishell(char **envp)
+// {
+// 	static t_data	data;
+// 	char			*input;
+// 	char			*prompt;
+
+// 	data.utils = init_utils();
+// 	enable_sigint();
+// 	set_exit_code(SUCCESS);
+// 	if (init_env_lst(&data, envp) != OK && set_old_pwd(&data) != OK)
+// 		return (get_error());
+// 	while (true)
+// 	{
+// 		fill_env_file(data);
+// 		disable_sigquit();
+// 		prompt = get_prompt();
+// 	#if NO_READLINE
+// 		printf("%s", prompt);
+// 		fflush(NULL);
+// 		if (get_next_line(STDIN_FILENO, &input) == GNL_EOF)
+// 		{
+// 			printf("EOF\n");
+// 			// free(input);
+// 			free(prompt);
+// 			free_data(&data);
+// 			// free_cmd_lst(data.cmd_list);
+// 			return (OK);
+// 		}
+// 		if (input[0] == '\n')
+// 		{
+// 			free(prompt);
+// 			free(input);
+// 			printf("enter\n");
+// 			continue;
+// 		}
+// 	#else
+// 		input = readline(prompt);
+// 		if (input == NULL)
+// 		{
+// 			printf("EOF\n");
+// 			//TODO free data (free_data segfaults)
+// 			// free_data(&data);
+// 			// free
+// 			free_eof(&data);
+// 			free(prompt);
+// 			rl_clear_history();
+// 			return (OK);
+// 		}
+// 		if (input[0] == '\0')
+// 		{
+// 			printf("enter\n");
+// 			free(input);
+// 			free(prompt);
+// 			continue;
+// 		}
+// 	#endif
+// 		free(prompt);
+// 		if (is_only_whitespace(input) == false)
+// 		{
+// 			#if !NO_READLINE
+// 				add_history(input);
+// 			#endif
+// 			enable_sigquit();
+// 			if (handle_input(&data, input) != OK)
+// 			{
+// 				// free_data(&data);
+// 				// free_cmd_lst(data.cmd_list);
+// 				free_data_cmd(&data);
+// 				return (get_error());
+// 			}
+// 		}
+// 	}
+// 	#if !NO_READLINE
+// 		rl_clear_history();
+// 	#endif
+// 	return (OK);
+// }
+
+static t_error	check_input(t_data *data, char *prompt, char *input)
+{
+	if (input[0] == '\0')
+	{
+		free(input);
+		free(prompt);
 	}
 	else
 	{
-		//! looping env paths
-		cmd = find_path(lst->cmd, paths);
-		if (access(cmd, F_OK) == 0 && access(cmd, X_OK) != 0)
-			exit (126);
-		execve(cmd, lst->args, envp);
-	}
-	exit(127);
-}
-
-void	child_exit(int cmd_nums, pid_t *child_pids)
-{
-	int		i;
-	int		status;
-	int		exit_status;
-	pid_t	child;
-
-	i = 0;
-	while (i < cmd_nums)
-	{
-		child = waitpid(child_pids[i], &status, 0);
-		// if (child == -1) {
-			// perror("waitpid");
-			// return EXIT_FAILURE;
-		// }
-		if (WIFEXITED(status))
+		free(prompt);
+		if (is_only_whitespace(input) == false)
 		{
-			exit_status = WEXITSTATUS(status);
-			g_exit_code = exit_status;
-			// printf("Child process %d exited with status: %d\n", child, exit_status);
-		}
-		i++;
-	}
-}
-
-//! [0] = fd_in
-//! [1] = fd_out
-//! [2] = temp_in == STDIN_FILENO
-//! [3] = temp_out == STDOUT_FILENO
-void	pipex(t_data data)
-{
-	bool		cmd;
-	int			cmd_nums;
-	int			i;
-	int			fd[4];
-	t_cmd_list	*temp;
-	pid_t		ret;
-
-	cmd = true;
-	temp = data.cmd_list;
-	fd[2] = dup(STDIN_FILENO);
-	fd[3] = dup(STDOUT_FILENO);
-	i = 0;
-	cmd_nums = cmd_list_size(data.cmd_list);
-	if (cmd_nums == 1 && strcmp(temp->cmd, "exit") == 0)
-		exit(0);
-	pid_t *child_pids = malloc(sizeof(pid_t) * cmd_nums);
-	while (temp)
-	{
-		cmd = check_redir_list(temp, fd);
-		dup2(fd[1], STDOUT_FILENO); 
-		close(fd[1]);
-		if (cmd == true)
-		{
-			if (check_builtin(temp->cmd) == true)
+			add_history(input);
+			enable_sigquit();
+			if (handle_input(data, input) != OK)
 			{
-				// printf("builtin\n");
-				run_builtin(data, temp);
-			}
-			else
-			{
-				// printf("fork\n");
-				ret = fork();
-				if (ret == 0)
-					exec_cmd(temp, data.env_lst);
+				free_data_cmd(data);
+				return (get_error());
 			}
 		}
-		temp = temp->next;
-		i++;
-	} // while loop
-
-	child_exit(cmd_nums, child_pids);
-	free(child_pids);
-	dup2(fd[2], STDIN_FILENO);
-	dup2(fd[3], STDOUT_FILENO);
-	close(fd[2]);
-	close(fd[3]);
+	}
+	return (OK);
 }
 
-
-t_utils	init_utils()
+void	print_open_fd()
 {
-	t_utils	utils;
-	char	*temp;
-
-	temp = getcwd(NULL, 0);
-	utils.local_dir = ft_strjoin(temp, "/.env.ms");
-	free(temp);
-	return (utils);
+	for (int fd = 0; fd < 1024; fd++) { // You can adjust the upper limit as needed
+        int flags = fcntl(fd, F_GETFD);
+        if (flags == -1) {
+            // An error occurred, so fd might not be open
+            continue;
+        }
+        if (flags & FD_CLOEXEC) {
+            // FD_CLOEXEC flag is set, indicating that fd is marked for automatic
+            // close on exec, so it's not open in your minishell
+            continue;
+        }
+        // If the code reaches here, fd is open and not marked for automatic close
+        printf("File descriptor %d is open.\n", fd);
+    }
 }
 
-void	print_handle(void)
+t_error	minishell(char **envp)
 {
-	char	*start;
-	char	*end;
-	char	*temp;
-	char	*dir;
-	char	*ms;
+	static t_data	data;
+	char			*input;
+	char			*prompt;
 
-	start = "\033[31;1mMS \033[1;38;5;206m➜ \033[1;36m";
-	end = "\033[1;34m$\033[0m";
-	temp = getcwd(NULL, 0);
-	dir = ft_strrchr(temp, '/') + 1;
-	free(temp);
-	temp = ft_strjoin(start, dir);
-	ms = ft_strjoin(temp, end);
-	free(temp);
-	printf("%s", ms);
-	free(ms);
-}
-
-int main(int argc, char *argv[], char *envp[])
-{
-	t_data data;
-	bool is_running = true;
-	data.env_lst = NULL;
 	data.utils = init_utils();
-	init_env_lst(&data, envp);
-	add_env(data, "OLDPWD=");
-
-	while (is_running)
+	enable_sigint();
+	if (init_env_lst(&data, envp) != OK && set_old_pwd(&data) != OK)
+		return (get_error());
+	while (true)
 	{
-		print_handle();
-		char *line = readline(" ");
-
-		add_history(line);
-
-		if (line)
-		{
-			char **args;
-			if (strchr(line, '|') != NULL)
-			{
-				args = ft_split(line, '|');
-
-				char **arg1 = ft_split(args[0], ' ');
-				char **arg2 = ft_split(args[1], ' ');
-				temp_cmd_pipe(&data.cmd_list, arg1, arg2);
-				pipex(data);
-			}
-			else
-			{
-				// printf("no pipe\n");
-				args = ft_split(line, ' ');
-				if (args[0]) {
-					temp_cmd(&data.cmd_list, args[0], args);
-					pipex(data);
-				}
-			}
-			free(line);
-		}
-		printf("\n");
-		printf("exit code = %d\n\n", g_exit_code);
+		disable_sigquit();
+		prompt = get_prompt();
+		input = readline(prompt);
+		if (input == NULL)
+			return (clean_input(&data, prompt));
+		if (check_input(&data, prompt, input) != OK)
+			return (get_error());
+		// print_open_fd();
 	}
+	return (OK);
+}
+
+
+
+int	main(int argc, char **argv, char **envp)
+{
+	(void)argc;
+	(void)argv;
+	if (!isatty(STDIN_FILENO))
+		rl_outstream = stdin;
+	if (minishell(envp) != OK)
+	{
+		rl_clear_history();
+		print_error(get_error());
+		return (EXIT_FAILURE);
+	}
+	rl_clear_history();
+	// print_open_fd();
+	return (get_exit_code());
 }
