@@ -6,7 +6,7 @@
 /*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 17:47:43 by rhorbach          #+#    #+#             */
-/*   Updated: 2023/11/21 16:21:02 by imisumi          ###   ########.fr       */
+/*   Updated: 2023/11/21 18:17:20 by imisumi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,6 +174,5 @@ t_utils				init_utils(void);
 int					storage(int value, int flag);
 
 
-void print_open_fd();
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/02 15:11:45 by rhorbach          #+#    #+#             */
-/*   Updated: 2023/11/21 16:23:08 by imisumi          ###   ########.fr       */
+/*   Updated: 2023/11/21 18:17:31 by imisumi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,24 +174,6 @@ static t_error	check_input(t_data *data, char *prompt, char *input)
 	return (OK);
 }
 
-void	print_open_fd()
-{
-	for (int fd = 0; fd < 1024; fd++) { // You can adjust the upper limit as needed
-        int flags = fcntl(fd, F_GETFD);
-        if (flags == -1) {
-            // An error occurred, so fd might not be open
-            continue;
-        }
-        if (flags & FD_CLOEXEC) {
-            // FD_CLOEXEC flag is set, indicating that fd is marked for automatic
-            // close on exec, so it's not open in your minishell
-            continue;
-        }
-        // If the code reaches here, fd is open and not marked for automatic close
-        printf("File descriptor %d is open.\n", fd);
-    }
-}
-
 t_error	minishell(char **envp)
 {
 	static t_data	data;
@@ -211,7 +193,6 @@ t_error	minishell(char **envp)
 			return (clean_input(&data, prompt));
 		if (check_input(&data, prompt, input) != OK)
 			return (get_error());
-		// print_open_fd();
 	}
 	return (OK);
 }
@@ -231,6 +212,5 @@ int	main(int argc, char **argv, char **envp)
 		return (EXIT_FAILURE);
 	}
 	rl_clear_history();
-	// print_open_fd();
 	return (get_exit_code());
 }

@@ -6,7 +6,7 @@
 /*   By: imisumi <imisumi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 17:47:43 by rhorbach          #+#    #+#             */
-/*   Updated: 2023/11/21 16:23:35 by imisumi          ###   ########.fr       */
+/*   Updated: 2023/11/21 18:17:34 by imisumi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ void	do_child_process(t_data *data, t_cmd_list *temp, bool redir)
 	free_data_utils(data);
 	if (data->utils.fd[0] >= 0)
 		close(data->utils.fd[0]);
-	print_open_fd();
 	if (redir == false)
 	{
 		free_data_cmd(data);
